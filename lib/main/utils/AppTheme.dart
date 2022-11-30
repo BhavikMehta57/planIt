@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +61,7 @@ class AppThemeData {
       iconTheme: IconThemeData(color: blackColor),
       brightness: Brightness.dark,
       systemOverlayStyle:
-          SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
+          SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light),
     ),
     primaryColor: appColorPrimary,
     accentColor: whiteColor,

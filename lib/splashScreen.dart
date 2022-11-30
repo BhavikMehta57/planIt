@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'dart:async';
-import 'package:planit/main/home.dart';
+import 'package:planit/main/appHome.dart';
 import 'package:planit/main/shared_prefs.dart';
 import 'package:planit/main/utils/AppColors.dart';
 import 'package:planit/main/utils/AppConstant.dart';
@@ -64,7 +64,8 @@ class _SDSplashScreenState extends State<SDSplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
+    final double deviceHeight = MediaQuery.of(context).size.height;
+    final double deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: app_Background,
       body: Center(
@@ -72,13 +73,13 @@ class _SDSplashScreenState extends State<SDSplashScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            // Container(
-            //   margin: const EdgeInsets.only(top: 16),
-            //   child: Image.asset("assets/images/planit.jpeg", height: 150.0),
-            // ),
             Container(
               margin: const EdgeInsets.only(top: 16),
-              child: text("Welcome to Planit",textColor: appWhite, fontSize: 30.0, fontFamily: fontBold),
+              child: Image.asset("assets/images/logo.png", height: deviceHeight * 0.25),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 16),
+              child: text("Welcome to PlanIt",textColor: appWhite, fontSize: 30.0, fontFamily: fontBold),
             ),
           ],
         ),

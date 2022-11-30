@@ -156,6 +156,7 @@ class _LoginState extends State<Login> {
                     FadeAnimation(
                       0.6,
                       EditText(
+                        isPrefixIcon: true,
                         onPressed: (value) {
                           userEmail = value;
                         },
@@ -180,6 +181,7 @@ class _LoginState extends State<Login> {
                     FadeAnimation(
                       0.8,
                       EditText(
+                        isPrefixIcon: true,
                         onPressed: (value) {
                           userPassword = value;
                         },

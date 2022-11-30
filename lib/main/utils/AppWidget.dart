@@ -20,15 +20,16 @@ import 'AppConstant.dart';
 
 Widget text(
   String text, {
-  var fontSize = textSizeMedium,
-  Color? textColor,
-  var fontFamily,
-  var isCentered = false,
-  var maxLine = 1,
-  var latterSpacing = 0.5,
-  bool textAllCaps = false,
-  var isLongText = false,
-  bool lineThrough = false,
+      var fontSize = textSizeMedium,
+      Color? textColor,
+      var fontFamily,
+      var isCentered = false,
+      var isBold = false,
+      var maxLine = 1,
+      var latterSpacing = 0.5,
+      bool textAllCaps = false,
+      var isLongText = false,
+      bool lineThrough = false,
 }) {
   return Text(
     textAllCaps ? text.toUpperCase() : text,
@@ -38,6 +39,7 @@ Widget text(
     style: TextStyle(
       fontFamily: fontFamily ?? null,
       fontSize: fontSize,
+      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
       color: textColor ?? appStore.textSecondaryColor,
       height: 1.5,
       letterSpacing: latterSpacing,
@@ -219,6 +221,7 @@ String parseHtmlString(String htmlString) {
 // EditText rounded Style
 
 class EditText extends StatefulWidget {
+  final bool isPrefixIcon;
   final String? hintText;
   final IconData? prefixIcon;
   final Color? prefixIconColor;
@@ -234,7 +237,7 @@ class EditText extends StatefulWidget {
   final Color? suffixIconColor;
   final Function? suffixIconOnTap;
   const EditText(
-      {Key? key, this.hintText, this.prefixIcon, required this.isPassword, this.isPhone, required this.onPressed, this.controller, this.keyboardType=TextInputType.text, required this.validatefunc, this.suffixIcon=null, this.readOnly=false, this.suffixIconOnTap=null, this.onTap, this.prefixIconColor, this.suffixIconColor})
+      {Key? key, this.hintText, this.prefixIcon, required this.isPassword, this.isPhone, required this.onPressed, this.controller, this.keyboardType=TextInputType.text, required this.validatefunc, this.suffixIcon=null, this.readOnly=false, this.suffixIconOnTap=null, this.onTap, this.prefixIconColor, this.suffixIconColor, required this.isPrefixIcon})
       : super(key: key);
   @override
   _EditTextState createState() => _EditTextState();
@@ -270,23 +273,27 @@ class _EditTextState extends State<EditText> {
                     if(widget.suffixIconOnTap != null) widget.suffixIconOnTap!();
                     setState(() => widget.controller!.clear());
                     },
-                  child: Icon(widget.suffixIcon),
+                  child: Icon(widget.suffixIcon, color: widget.suffixIconColor,),
                 ),
-          prefixIcon: Icon(
+          prefixIcon: widget.isPrefixIcon ? Icon(
             widget.prefixIcon,
             color: widget.prefixIconColor ?? appColorSecondary,
-          ),
-          contentPadding: EdgeInsets.symmetric(vertical: 9),
+          ) : null,
+          contentPadding: EdgeInsets.symmetric(vertical: 9, horizontal: 5),
           hintText: widget.hintText,
-          hintStyle: TextStyle(color: hint_text_colour, ),
+          hintStyle: TextStyle(color: hint_text_colour, fontSize: textSizeMedium),
           filled: true,
           fillColor: edit_text_background,
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
-              borderSide: const BorderSide(color: border_colour, width: 0.0)),
+              borderSide: const BorderSide(color: appColorPrimary, width: 0.0)),
           focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5),
+            borderSide: const BorderSide(color: appColorPrimary, width: 0.0),
+          ),
+          errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: border_colour, width: 0.0),
+            borderSide: const BorderSide(color: appColorPrimary, width: 0.0),
           ),
         ),
         cursorColor: textSecondaryColor,

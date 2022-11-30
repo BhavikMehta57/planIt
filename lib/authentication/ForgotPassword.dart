@@ -113,6 +113,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   child: FadeAnimation(
                     0.8,
                     EditText(
+                      isPrefixIcon: true,
                       keyboardType: TextInputType.emailAddress,
                       controller: email,
                       onPressed: (value) {

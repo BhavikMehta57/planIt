@@ -1,4 +1,4 @@
-import 'package:planit/main/home.dart';
+import 'package:planit/main/appHome.dart';
 import 'package:planit/main/shared_prefs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,7 +21,7 @@ void main() async{
       // systemNavigationBarColor: Colors.transparent,
       systemNavigationBarDividerColor: Colors.transparent,
       // systemNavigationBarIconBrightness: Brightness.dark,
-      // statusBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
       statusBarColor: Colors.transparent,)
   );
   //Setting SystemUIMode

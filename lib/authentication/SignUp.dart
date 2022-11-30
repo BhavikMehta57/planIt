@@ -185,6 +185,7 @@ class _SignupState extends State<Signup> {
                       FadeAnimation(
                         0.8,
                         EditText(
+                          isPrefixIcon: true,
                           //full name
                           onPressed: (value) {
                             fullName = value;
@@ -205,6 +206,7 @@ class _SignupState extends State<Signup> {
                       FadeAnimation(
                         1.2,
                         EditText(
+                          isPrefixIcon: true,
                           onPressed: (value) {
                             userEmail = value;
                           },
@@ -229,6 +231,7 @@ class _SignupState extends State<Signup> {
                       FadeAnimation(
                         1.4,
                         EditText(
+                          isPrefixIcon: true,
                           onPressed: (value) {
                             password = value;
                             print(password);
@@ -251,6 +254,7 @@ class _SignupState extends State<Signup> {
                       FadeAnimation(
                         1.6,
                         EditText(
+                          isPrefixIcon: true,
                           onPressed: (value) {
                             rePassword = value;
 
