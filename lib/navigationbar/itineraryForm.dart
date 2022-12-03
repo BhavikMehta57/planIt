@@ -60,6 +60,10 @@ class _ItineraryFormState extends State<ItineraryForm> {
     "Leisure": false,
     "Beaches": false,
     "Shopping": false,
+    "Food": false,
+    "Nature & Wildlife": false,
+    "Art & Museum": false,
+    "Malls": false,
   };
   var budgetList = ["Below 10K", "10k - 15K", "15k - 20K", "20k - 30K", "30k - 40K", "40k - 50K", "Above 50K"];
   var destinationList = ["Mumbai", "Delhi", "Chennai" , "Hyderabad"];
