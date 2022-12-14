@@ -21,7 +21,7 @@ class SDSplashScreen extends StatefulWidget {
 class _SDSplashScreenState extends State<SDSplashScreen>
     with SingleTickerProviderStateMixin {
   startTime() async {
-    var _duration = Duration(seconds: 3);
+    var _duration = const Duration(seconds: 3);
     return Timer(_duration, navigate);
   }
 

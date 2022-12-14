@@ -103,7 +103,7 @@ flutter:
   assets:
     - assets/images/MainHomeImage.png
     - assets/images/Chennai.jpg
-    - assets/images/Delhi.jpg
+    - assets/images/Delhi NCR.jpg
     - assets/images/Hyderabad.jpg
     - assets/images/Mumbai.jpg
     - assets/images/logo.png

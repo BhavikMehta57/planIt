@@ -141,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage("assets/images/Delhi.jpg"),
+                            image: AssetImage("assets/images/Delhi NCR.jpg"),
                             colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
                           ),
                         ),

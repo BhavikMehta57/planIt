@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:planit/navigationbar/userHome.dart';
-import 'package:planit/splashScreen.dart';
+import 'package:planit/screens/splashScreen.dart';
 
 import 'main/store/AppStore.dart';
 import 'main/utils/AppTheme.dart';

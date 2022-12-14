@@ -22,6 +22,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:planit/screens/itinerary.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mailer/mailer.dart';
@@ -126,140 +127,294 @@ class _MyTripsState extends State<MyTrips> {
           ),
           SizedBox(height: deviceHeight * 0.03,),
           Expanded(
-            child: ListView(
-              children: [
-                Container(
-                  height: deviceHeight * 0.15,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: appWhite),
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: AssetImage("assets/images/Mumbai.jpg"),
-                            ),
-                          ),
-                          child: Container(
-                            height: deviceHeight * 0.15,
-                          ),
+            child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("itineraries")
+                    .where("UserEmail", isEqualTo: FirebaseAuth.instance.currentUser!.email)
+                    .snapshots(),
+                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                  if(!snapshot.hasData){
+                    print("Connection state: has no data");
+                    return Column(
+                      children: const [
+                        SizedBox(
+                          height:10.0,
                         ),
-                      ),
-                      SizedBox(width: deviceWidth * 0.03),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            text(
-                              "Mumbai",
-                              fontSize: 20.0,
-                              isBold: true,
-                            ),
-                            SizedBox(height: deviceHeight * 0.02,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.people_outline),
-                                SizedBox(width: deviceWidth * 0.01),
-                                text("4"),
-                                SizedBox(width: deviceWidth * 0.03),
-                                Icon(Icons.calendar_today_outlined),
-                                SizedBox(width: deviceWidth * 0.01),
-                                text("5D 4N"),
-                                SizedBox(width: deviceWidth * 0.03),
-                                Icon(Icons.remove_red_eye_outlined),
-                                SizedBox(width: deviceWidth * 0.01),
-                                text("45"),
-                              ],
-                            ),
-                            SizedBox(height: deviceHeight * 0.02,),
-                            text("$rupees 14000")
-                          ],
+                        Center(
+                          child: CircularProgressIndicator(color: appWhite,),
+                        )
+                      ],
+                    );
+                  }
+                  else if(snapshot.connectionState == ConnectionState.waiting){
+                    print("Connection state: waiting");
+                    return Column(
+                      children: const [
+                        SizedBox(
+                          height:10.0,
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: deviceHeight * 0.02,),
-                Container(
-                  height: deviceHeight * 0.15,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: appWhite),
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: AssetImage("assets/images/Delhi.jpg"),
-                            ),
-                          ),
-                          child: Container(
-                            height: deviceHeight * 0.15,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: deviceWidth * 0.03),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            text(
-                              "Agra",
-                              fontSize: 20.0,
-                              isBold: true,
-                            ),
-                            SizedBox(height: deviceHeight * 0.02,),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.people_outline),
-                                SizedBox(width: deviceWidth * 0.01),
-                                text("3"),
-                                SizedBox(width: deviceWidth * 0.03),
-                                Icon(Icons.calendar_today_outlined),
-                                SizedBox(width: deviceWidth * 0.01),
-                                text("3D 2N"),
-                                SizedBox(width: deviceWidth * 0.03),
-                                Icon(Icons.remove_red_eye_outlined),
-                                SizedBox(width: deviceWidth * 0.01),
-                                text("35"),
-                              ],
-                            ),
-                            SizedBox(height: deviceHeight * 0.02,),
-                            text("$rupees 10000")
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
+                        Center(
+                          child: CircularProgressIndicator(color: appWhite,),
+                        )
+                      ],
+                    );
+                  }
+                  else{
+                    print("Connection state: hasdata");
+                    if(snapshot.data!.docs.isEmpty){
+                      return Center(
+                          child: Column(
+                              children: const [
+                                Text(
+                                  'No Information Available',
+                                  style: TextStyle(
+                                      color: appWhite,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25),
+                                ),
+                                Center(
+                                  child: CircularProgressIndicator(color: appWhite,),
+                                )
+                              ]
+                          )
+                      );
+                    }
+                    else{
+                      return ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: snapshot.data!.docs.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index){
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ItineraryPage(
+                                          itineraryID: snapshot.data!.docs[index]["ItineraryID"],
+                                          destination: snapshot.data!.docs[index]["Destination"],
+                                          itinerary: snapshot.data!.docs[index]["Itinerary"],
+                                          startDate: snapshot.data!.docs[index]["Start Date"],
+                                          numberOfDays: snapshot.data!.docs[index]["Number of Days"],
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: deviceHeight * 0.15,
+                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: appWhite),
+                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                            image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: AssetImage("assets/images/${snapshot.data!.docs[index]["Destination"]}.jpg"),
+                                            ),
+                                          ),
+                                          child: Container(
+                                            height: deviceHeight * 0.15,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: deviceWidth * 0.03),
+                                      Expanded(
+                                        flex: 3,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            text(
+                                              snapshot.data!.docs[index]["Destination"],
+                                              fontSize: 20.0,
+                                              isBold: true,
+                                            ),
+                                            SizedBox(height: deviceHeight * 0.02,),
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Icon(Icons.people_outline),
+                                                SizedBox(width: deviceWidth * 0.01),
+                                                text(snapshot.data!.docs[index]["Number of travellers"]),
+                                                SizedBox(width: deviceWidth * 0.03),
+                                                Icon(Icons.calendar_today_outlined),
+                                                SizedBox(width: deviceWidth * 0.01),
+                                                text(snapshot.data!.docs[index]["Number of Days"].toString() + "D " + (snapshot.data!.docs[index]["Number of Days"] - 1).toString() + "N"),
+                                                SizedBox(width: deviceWidth * 0.03),
+                                                // Icon(Icons.remove_red_eye_outlined),
+                                                // SizedBox(width: deviceWidth * 0.01),
+                                                // text("45"),
+                                              ],
+                                            ),
+                                            SizedBox(height: deviceHeight * 0.02,),
+                                            text("$rupees 10000"),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: deviceHeight * 0.02,),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  }
+                }
             ),
           ),
+          // Expanded(
+          //   child: ListView(
+          //     children: [
+          //       Container(
+          //         height: deviceHeight * 0.15,
+          //         margin: EdgeInsets.symmetric(horizontal: 20),
+          //         decoration: BoxDecoration(
+          //           border: Border.all(color: appWhite),
+          //           borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          //         ),
+          //         child: Row(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             Expanded(
+          //               flex: 2,
+          //               child: Container(
+          //                 decoration: BoxDecoration(
+          //                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          //                   image: DecorationImage(
+          //                     fit: BoxFit.cover,
+          //                     image: AssetImage("assets/images/Mumbai.jpg"),
+          //                   ),
+          //                 ),
+          //                 child: Container(
+          //                   height: deviceHeight * 0.15,
+          //                 ),
+          //               ),
+          //             ),
+          //             SizedBox(width: deviceWidth * 0.03),
+          //             Expanded(
+          //               flex: 3,
+          //               child: Column(
+          //                 mainAxisAlignment: MainAxisAlignment.start,
+          //                 crossAxisAlignment: CrossAxisAlignment.start,
+          //                 children: [
+          //                   text(
+          //                     "Mumbai",
+          //                     fontSize: 20.0,
+          //                     isBold: true,
+          //                   ),
+          //                   SizedBox(height: deviceHeight * 0.02,),
+          //                   Row(
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     mainAxisAlignment: MainAxisAlignment.start,
+          //                     children: [
+          //                       Icon(Icons.people_outline),
+          //                       SizedBox(width: deviceWidth * 0.01),
+          //                       text("4"),
+          //                       SizedBox(width: deviceWidth * 0.03),
+          //                       Icon(Icons.calendar_today_outlined),
+          //                       SizedBox(width: deviceWidth * 0.01),
+          //                       text("5D 4N"),
+          //                       SizedBox(width: deviceWidth * 0.03),
+          //                       Icon(Icons.remove_red_eye_outlined),
+          //                       SizedBox(width: deviceWidth * 0.01),
+          //                       text("45"),
+          //                     ],
+          //                   ),
+          //                   SizedBox(height: deviceHeight * 0.02,),
+          //                   text("$rupees 14000")
+          //                 ],
+          //               ),
+          //             )
+          //           ],
+          //         ),
+          //       ),
+          //       SizedBox(height: deviceHeight * 0.02,),
+          //       Container(
+          //         height: deviceHeight * 0.15,
+          //         margin: EdgeInsets.symmetric(horizontal: 20),
+          //         decoration: BoxDecoration(
+          //           border: Border.all(color: appWhite),
+          //           borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          //         ),
+          //         child: Row(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             Expanded(
+          //               flex: 2,
+          //               child: Container(
+          //                 decoration: BoxDecoration(
+          //                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          //                   image: DecorationImage(
+          //                     fit: BoxFit.cover,
+          //                     image: AssetImage("assets/images/Delhi.jpg"),
+          //                   ),
+          //                 ),
+          //                 child: Container(
+          //                   height: deviceHeight * 0.15,
+          //                 ),
+          //               ),
+          //             ),
+          //             SizedBox(width: deviceWidth * 0.03),
+          //             Expanded(
+          //               flex: 3,
+          //               child: Column(
+          //                 mainAxisAlignment: MainAxisAlignment.start,
+          //                 crossAxisAlignment: CrossAxisAlignment.start,
+          //                 children: [
+          //                   text(
+          //                     "Agra",
+          //                     fontSize: 20.0,
+          //                     isBold: true,
+          //                   ),
+          //                   SizedBox(height: deviceHeight * 0.02,),
+          //                   Row(
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     mainAxisAlignment: MainAxisAlignment.start,
+          //                     children: [
+          //                       Icon(Icons.people_outline),
+          //                       SizedBox(width: deviceWidth * 0.01),
+          //                       text("3"),
+          //                       SizedBox(width: deviceWidth * 0.03),
+          //                       Icon(Icons.calendar_today_outlined),
+          //                       SizedBox(width: deviceWidth * 0.01),
+          //                       text("3D 2N"),
+          //                       SizedBox(width: deviceWidth * 0.03),
+          //                       Icon(Icons.remove_red_eye_outlined),
+          //                       SizedBox(width: deviceWidth * 0.01),
+          //                       text("35"),
+          //                     ],
+          //                   ),
+          //                   SizedBox(height: deviceHeight * 0.02,),
+          //                   text("$rupees 10000")
+          //                 ],
+          //               ),
+          //             )
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           SizedBox(height: deviceHeight * 0.02,),
         ],
       ),

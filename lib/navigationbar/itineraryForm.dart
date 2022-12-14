@@ -66,7 +66,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
     "Malls": false,
   };
   var budgetList = ["Below 10K", "10k - 15K", "15k - 20K", "20k - 30K", "30k - 40K", "40k - 50K", "Above 50K"];
-  var destinationList = ["Mumbai", "Delhi", "Chennai" , "Hyderabad"];
+  var destinationList = ["Mumbai", "Delhi NCR", "Chennai" , "Hyderabad"];
   ScrollController scrollController = ScrollController();
 
   @override
@@ -575,6 +575,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
                       });
                       String docId = nanoid(8);
                       if(_formKey.currentState!.validate()){
+                        int diff = DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays + 1;
                         try {
                           await FirebaseFirestore.instance.collection("plannerInput").doc(docId).set({
                             "Destination": destination,
@@ -583,9 +584,11 @@ class _ItineraryFormState extends State<ItineraryForm> {
                             "Number of travellers": numberOfTravellers,
                             "Areas of Interest": areasOfInterest,
                             "Budget": budget,
+                            "Number of Days": diff,
+                            "ItineraryID": docId,
+                            "UserEmail": FirebaseAuth.instance.currentUser!.email,
                           });
                           setState((){
-                            areasOfInterest.clear();
                             showSuccessfulApplicationDialog("Data Uploaded", "Data sent to Firebase successfully");
                             isPlanning = false;
                           });
