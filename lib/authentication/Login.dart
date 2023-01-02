@@ -51,8 +51,7 @@ class _LoginState extends State<Login> {
         });
         return;
       } else {
-        //Check user type
-        if(ds.data()!['Password'] == userPassword){
+
           final UserCredential userCreds = await FirebaseAuth.instance.signInWithEmailAndPassword(email: userEmail, password: userPassword);
           final User? currentUser = FirebaseAuth.instance.currentUser;
 
@@ -71,7 +70,7 @@ class _LoginState extends State<Login> {
                 ),
                     (Route<dynamic> route) => false);
           } else {
-            print("Auth Failed! (Login, from verify callback)");
+            print("Auth Failed! Incorrect Password.");
             setState(() {
               isLoading = false;
             });
@@ -81,17 +80,6 @@ class _LoginState extends State<Login> {
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
-        } else {
-          const snackBar = SnackBar(
-            content:
-            Text('Incorrect Password.'),
-            duration: Duration(seconds: 5),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          setState(() {
-            isLoading = false;
-          });
-        }
       }
     } catch (e) {
       print(e);
