@@ -197,7 +197,6 @@ class _MyTripsState extends State<MyTrips> {
                                         return ItineraryPage(
                                           itineraryID: snapshot.data!.docs[index]["ItineraryID"],
                                           destination: snapshot.data!.docs[index]["Destination"],
-                                          itinerary: snapshot.data!.docs[index]["Itinerary"],
                                           startDate: snapshot.data!.docs[index]["Start Date"],
                                           numberOfDays: snapshot.data!.docs[index]["Number of Days"],
                                         );

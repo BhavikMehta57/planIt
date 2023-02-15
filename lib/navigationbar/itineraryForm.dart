@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_print, must_be_immutable, file_names, non_constant_identifier_names, prefer_const_constructors
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -25,11 +26,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:planit/screens/hotelList.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class ItineraryForm extends StatefulWidget {
   static String tag = '/ItineraryForm';
@@ -66,8 +69,10 @@ class _ItineraryFormState extends State<ItineraryForm> {
     "Malls": false,
   };
   var budgetList = ["Below 10K", "10k - 15K", "15k - 20K", "20k - 30K", "30k - 40K", "40k - 50K", "Above 50K"];
-  var destinationList = ["Mumbai", "Delhi NCR", "Chennai" , "Hyderabad"];
+  var destinationList = ["Mumbai", "Delhi", "Chennai" , "Hyderabad"];
   ScrollController scrollController = ScrollController();
+
+  List hotelList = [];
 
   @override
   void initState() {
@@ -96,6 +101,16 @@ class _ItineraryFormState extends State<ItineraryForm> {
         onDismissCallback: (type) {
           debugPrint('Dialog Dismiss from callback');
         }).show();
+  }
+
+  Future<void> getHotelsList(String city) async {
+    String url = "http://192.168.29.232:8000/hotels/$city";
+    final response = await http.get(Uri.parse(url), headers: {"Accept" : "application/json"});
+    var responseData = json.decode(response.body);
+    //print(responseData['result']['data']);
+    setState(() {
+      hotelList = responseData['result']['data'];
+    });
   }
 
   // Future createJobDynamicLink() async {
@@ -326,59 +341,52 @@ class _ItineraryFormState extends State<ItineraryForm> {
                     ),
                   ),
                   SizedBox(height: deviceHeight * 0.02),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: EditText(
-                          readOnly: true,
-                          controller: startDateController,
-                          isPrefixIcon: false,
-                          onPressed: (value) {
-                            selectedStartDate = value;
-                          },
-                          hintText: "Start Date",
-                          suffixIcon: Icons.calendar_today,
-                          suffixIconColor: appColorPrimary,
-                          suffixIconOnTap: () {
-                            _pickStartDateDialog();
-                          },
-                          isPassword: false,
-                          isPhone: false,
-                          keyboardType: TextInputType.text,
-                          validatefunc: (String? value) {
-                            if (value!.isEmpty) {
-                              return 'Please select a start date';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: EditText(
-                          readOnly: true,
-                          controller: endDateController,
-                          isPrefixIcon: false,
-                          onPressed: (value) {
-                            selectedEndDate = value;
-                          },
-                          hintText: "End Date",
-                          suffixIcon: Icons.calendar_today,
-                          suffixIconColor: appColorPrimary,
-                          suffixIconOnTap: () {
-                            _pickEndDateDialog();
-                          },
-                          isPassword: false,
-                          isPhone: false,
-                          keyboardType: TextInputType.text,
-                          validatefunc: (String? value) {
-                            if (value!.isEmpty) {
-                              return 'Please select an end date';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
+                  EditText(
+                    readOnly: true,
+                    controller: startDateController,
+                    isPrefixIcon: false,
+                    onPressed: (value) {
+                      selectedStartDate = value;
+                    },
+                    hintText: "Start Date",
+                    suffixIcon: Icons.calendar_today,
+                    suffixIconColor: appColorPrimary,
+                    suffixIconOnTap: () {
+                      _pickStartDateDialog();
+                    },
+                    isPassword: false,
+                    isPhone: false,
+                    keyboardType: TextInputType.text,
+                    validatefunc: (String? value) {
+                      if (value!.isEmpty) {
+                        return 'Please select a start date';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: deviceHeight * 0.02),
+                  EditText(
+                    readOnly: true,
+                    controller: endDateController,
+                    isPrefixIcon: false,
+                    onPressed: (value) {
+                      selectedEndDate = value;
+                    },
+                    hintText: "End Date",
+                    suffixIcon: Icons.calendar_today,
+                    suffixIconColor: appColorPrimary,
+                    suffixIconOnTap: () {
+                      _pickEndDateDialog();
+                    },
+                    isPassword: false,
+                    isPhone: false,
+                    keyboardType: TextInputType.text,
+                    validatefunc: (String? value) {
+                      if (value!.isEmpty) {
+                        return 'Please select an end date';
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: deviceHeight * 0.02),
                   EditText(
@@ -494,74 +502,74 @@ class _ItineraryFormState extends State<ItineraryForm> {
                     ],
                   ),
                   SizedBox(height: deviceHeight * 0.02),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: appColorPrimary, width: 0.0),
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    ),
-                    child: DropdownButtonFormField2(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: edit_text_background,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        //Add more decoration as you want here
-                        //Add label If you want but add hint outside the decoration to be aligned in the button perfectly.
-                      ),
-                      isExpanded: true,
-                      focusColor: appBlack,
-                      hint: const Text(
-                        'Choose your budget',
-                        style: TextStyle(
-                            color: hint_text_colour,
-                            fontSize: textSizeMedium,
-                            fontFamily: fontRegular
-                        ),
-                      ),
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: appBlack,
-                      ),
-                      iconSize: 30,
-                      buttonHeight: 50,
-                      buttonPadding: const EdgeInsets.only(left: 20, right: 10),
-                      dropdownDecoration: BoxDecoration(
-                        color: edit_text_background,
-                        border: Border.all(color: appColorPrimary, width: 0.0),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      items: budgetList
-                          .map((item) =>
-                          DropdownMenuItem<String>(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: appColorPrimary,
-                              ),
-                            ),
-                          )).toList(),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please select a range for your budget';
-                        }
-                      },
-                      onChanged: (value) {
-                        budget = value.toString();
-                        print(budget);
-                      },
-                      onSaved: (value) {
-                        budget = value.toString();
-                        print(budget);
-                      },
-                    ),
-                  ),
-                  SizedBox(height: deviceHeight * 0.02),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(horizontal: 15),
+                  //   decoration: BoxDecoration(
+                  //     border: Border.all(color: appColorPrimary, width: 0.0),
+                  //     borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //   ),
+                  //   child: DropdownButtonFormField2(
+                  //     decoration: InputDecoration(
+                  //       filled: true,
+                  //       fillColor: edit_text_background,
+                  //       isDense: true,
+                  //       contentPadding: EdgeInsets.zero,
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(5),
+                  //       ),
+                  //       //Add more decoration as you want here
+                  //       //Add label If you want but add hint outside the decoration to be aligned in the button perfectly.
+                  //     ),
+                  //     isExpanded: true,
+                  //     focusColor: appBlack,
+                  //     hint: const Text(
+                  //       'Choose your budget',
+                  //       style: TextStyle(
+                  //           color: hint_text_colour,
+                  //           fontSize: textSizeMedium,
+                  //           fontFamily: fontRegular
+                  //       ),
+                  //     ),
+                  //     icon: const Icon(
+                  //       Icons.arrow_drop_down,
+                  //       color: appBlack,
+                  //     ),
+                  //     iconSize: 30,
+                  //     buttonHeight: 50,
+                  //     buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                  //     dropdownDecoration: BoxDecoration(
+                  //       color: edit_text_background,
+                  //       border: Border.all(color: appColorPrimary, width: 0.0),
+                  //       borderRadius: BorderRadius.circular(15),
+                  //     ),
+                  //     items: budgetList
+                  //         .map((item) =>
+                  //         DropdownMenuItem<String>(
+                  //           value: item,
+                  //           child: Text(
+                  //             item,
+                  //             style: const TextStyle(
+                  //               fontSize: 14,
+                  //               color: appColorPrimary,
+                  //             ),
+                  //           ),
+                  //         )).toList(),
+                  //     validator: (value) {
+                  //       if (value == null) {
+                  //         return 'Please select a range for your budget';
+                  //       }
+                  //     },
+                  //     onChanged: (value) {
+                  //       budget = value.toString();
+                  //       print(budget);
+                  //     },
+                  //     onSaved: (value) {
+                  //       budget = value.toString();
+                  //       print(budget);
+                  //     },
+                  //   ),
+                  // ),
+                  // SizedBox(height: deviceHeight * 0.02),
                   isPlanning
                       ?
                   const Center(
@@ -577,22 +585,30 @@ class _ItineraryFormState extends State<ItineraryForm> {
                       if(_formKey.currentState!.validate()){
                         int diff = DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays + 1;
                         try {
+                          await getHotelsList(destination);
                           await FirebaseFirestore.instance.collection("plannerInput").doc(docId).set({
                             "Destination": destination,
                             "Start Date": selectedStartDate,
                             "End Date": selectedEndDate,
                             "Number of travellers": numberOfTravellers,
                             "Areas of Interest": areasOfInterest,
-                            "Budget": budget,
+                            // "Budget": budget,
                             "Number of Days": diff,
                             "ItineraryID": docId,
                             "UserEmail": FirebaseAuth.instance.currentUser!.email,
                           });
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HotelList(hotelList: hotelList, itineraryID: docId, city: destination,)
+                              )
+                          );
                           setState((){
-                            showSuccessfulApplicationDialog("Data Uploaded", "Data sent to Firebase successfully");
+                            // showSuccessfulApplicationDialog("Data Uploaded", "Data sent to Firebase successfully");
                             isPlanning = false;
                           });
                         } catch(e) {
+                          print(e);
                           const snackBar = SnackBar(
                             content: Text('Planning Failed\nPlease check your internet connection'),
                             duration: Duration(seconds: 10),

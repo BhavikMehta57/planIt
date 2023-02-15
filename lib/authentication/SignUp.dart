@@ -56,7 +56,6 @@ class _SignupState extends State<Signup> {
     await _firestore.collection("users").doc(userEmail).set({
       "Full Name": fullName,
       "Email": userEmail,
-      "Password": password,
       "Profile Url": DefaultProfilPhotoURL,
       "Registered On": DateTime.now().toString(),
       "isVerified": true,

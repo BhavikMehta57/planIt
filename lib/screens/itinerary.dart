@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_print, must_be_immutable, file_names, non_constant_identifier_names, prefer_const_constructors
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -22,20 +23,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:planit/screens/restaurantList.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class ItineraryPage extends StatefulWidget {
   static String tag = '/ItineraryPage';
   final String itineraryID;
   final int numberOfDays;
   final String startDate;
-  final List itinerary;
   final String destination;
-  const ItineraryPage({Key? key,required this.itineraryID, required this.numberOfDays, required this.startDate, required this.itinerary, required this.destination}) : super(key: key);
+  const ItineraryPage({Key? key,required this.itineraryID, required this.numberOfDays, required this.startDate, required this.destination}) : super(key: key);
 
   @override
   _ItineraryPageState createState() => _ItineraryPageState();
@@ -45,15 +47,26 @@ class _ItineraryPageState extends State<ItineraryPage> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedIndex = 0;
+  List itinerary = [];
 
   @override
   void initState() {
     super.initState();
+    getItinerary(widget.itineraryID);
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> getItinerary(String itineraryID) async {
+    await FirebaseFirestore.instance.collection("itineraries").doc(itineraryID).get().then((value) {
+      setState(() {
+        itinerary = value.data()!['Itinerary'];
+        print(itinerary);
+      });
+    });
   }
 
   @override
@@ -165,11 +178,24 @@ class _ItineraryPageState extends State<ItineraryPage> {
               margin: EdgeInsets.symmetric(horizontal: 10),
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
-                  itemCount: widget.itinerary[selectedIndex]['places'].length,
+                  itemCount: itinerary.isEmpty ? 0 : itinerary[selectedIndex]['places']['Place'].length,
                   itemBuilder: (context, index){
+                  bool memory = true;
+                  String img = itinerary[selectedIndex]['places']['Image'][index];
+                  String new_img = "";
+                  if(img.startsWith("data:image/jpeg;base64,")){
+                    memory = true;
+                    new_img = img.substring(23);
+                  } else {
+                    memory = false;
+                  }
                     return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
                               child: Container(
@@ -185,10 +211,10 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                         color: Colors.blue,
                                         // border: Border.all(color: appWhite),
                                       ),
-                                      child: text("9:00 AM", fontSize: textSizeSmall, isCentered: true),
+                                      child: text("9:00", fontSize: textSizeSmall, isCentered: true),
                                     ),
                                     Spacer(),
-                                    text("23 mins", fontSize: textSizeSmall, isCentered: true)
+                                    text("${(itinerary[selectedIndex]['places']['Avg time spent'][index] * 60).round().toString()} mins", fontSize: textSizeSmall, isCentered: true)
                                   ],
                                 ),
                               ),
@@ -196,7 +222,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
                             Expanded(
                               flex: 4,
                               child: Container(
-                                height: deviceHeight * 0.1,
+                                height: deviceHeight * 0.15,
                                 margin: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
                                   border: Border.all(color: appWhite),
@@ -211,9 +237,12 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                       child: Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                          image: DecorationImage(
+                                          image: memory ? DecorationImage(
                                             fit: BoxFit.cover,
-                                            image: AssetImage("assets/images/Mumbai.jpg"),
+                                            image: MemoryImage(base64Decode(new_img)),
+                                          ) : DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(img),
                                           ),
                                         ),
                                         child: Container(
@@ -225,32 +254,42 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                     Expanded(
                                       flex: 3,
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
+                                          SizedBox(height: deviceHeight * 0.15 * 0.02,),
                                           text(
-                                            widget.itinerary[selectedIndex]['places'][index],
+                                            itinerary[selectedIndex]['places']['Place'][index],
                                             maxLine: 2,
                                             fontSize: textSizeSMedium,
                                             isBold: true,
                                           ),
-                                          SizedBox(height: deviceHeight * 0.01,),
+                                          SizedBox(height: deviceHeight * 0.15 * 0.02,),
                                           Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
-                                              Icon(Icons.map_outlined),
+                                              Icon(Icons.location_on_outlined),
+                                              SizedBox(width: deviceWidth * 0.05),
+                                              text("$rupees ${itinerary[selectedIndex]['places']['Avg Cost'][index].toString()}"),
+                                              SizedBox(width: deviceWidth * 0.05),
+                                              text(itinerary[selectedIndex]['places']['Rating'][index].toString()),
                                               SizedBox(width: deviceWidth * 0.01),
-                                              text("5"),
-                                              SizedBox(width: deviceWidth * 0.1),
-                                              text("4.5"),
-                                              Icon(Icons.star, color: Colors.yellow,),
+                                              Icon(Icons.star, color: Colors.yellow, size: 15.0,),
                                               SizedBox(width: deviceWidth * 0.01),
                                               // Icon(Icons.remove_red_eye_outlined),
                                               // SizedBox(width: deviceWidth * 0.01),
                                               // text("45"),
                                             ],
                                           ),
+                                          SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                          text(
+                                            itinerary[selectedIndex]['places']['Type'][index],
+                                            maxLine: 2,
+                                            fontSize: textSizeSMedium,
+                                            isBold: true,
+                                          ),
+                                          SizedBox(height: deviceHeight * 0.15 * 0.02,),
                                         ],
                                       ),
                                     )
@@ -260,11 +299,45 @@ class _ItineraryPageState extends State<ItineraryPage> {
                             )
                           ],
                         ),
-                        // Container(
-                        //     margin: EdgeInsets.symmetric(horizontal: 15),
-                        //     child: text(widget.itinerary[selectedIndex]['places'][index], maxLine: 3)
-                        // ),
-                        SizedBox(height: deviceHeight * 0.01,)
+                        SizedBox(height: deviceHeight * 0.01,),
+                        index == 2 ? GestureDetector(
+                          onTap: () async {
+                            final response = await http.post(
+                              Uri.parse('http://192.168.29.232:8000/restaurants/${widget.destination}'),
+                              headers: <String, String>{
+                                'accept': 'application/json',
+                                'Content-Type': 'application/json',
+                              },
+                              body: jsonEncode({
+                                "latitude": itinerary[selectedIndex]['places']['Latitude'][index],
+                                "longitude": itinerary[selectedIndex]['places']['Longitude'][index],
+                              }),
+                            );
+                            var responseData = json.decode(response.body);
+                            var result = responseData['result']['data'];
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return RestaurantList(
+                                    restaurantList: result,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 10),
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: appWhite),
+                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                              ),
+                              child: text("Explore Lunch Options", maxLine: 3, isCentered: true, textColor: appColorAccent)
+                          ),
+                        ) : Container(),
+                        SizedBox(height: deviceHeight * 0.01,),
                       ],
                     );
                   }
