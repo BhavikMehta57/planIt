@@ -249,7 +249,7 @@ class _EditTextState extends State<EditText> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: TextFormField(
         autofocus: false,
         keyboardType: widget.keyboardType,

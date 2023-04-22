@@ -44,13 +44,16 @@ class RestaurantList extends StatefulWidget {
 class _RestaurantListState extends State<RestaurantList> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   int? selected;
+  String? searchRestaurant;
+  List allRestaurantsList = [];
+  List filteredrestaurantsList = [];
 
   @override
   void initState() {
     super.initState();
-    print(widget.restaurantList);
+    allRestaurantsList = List.from(widget.restaurantList);
+    filteredrestaurantsList = List.from(widget.restaurantList);
   }
 
   @override
@@ -87,7 +90,7 @@ class _RestaurantListState extends State<RestaurantList> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: appWhite),
         backgroundColor: app_Background,
-        title: text("PlanIt", textColor: appWhite, fontSize: textSizeLarge),
+        title: text("Restaurants", textColor: appWhite, fontSize: textSizeLarge),
         elevation: 0,
       ),
       body: Column(
@@ -105,20 +108,29 @@ class _RestaurantListState extends State<RestaurantList> {
               )
           ),
           SizedBox(height: deviceHeight * 0.02,),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            child: text("Search",
-              textColor: appWhite,
-              fontSize: 18.0,
-              fontFamily: fontBold,
-              maxLine: 2,
-            ),
+          EditText(
+            isPrefixIcon: false,
+            onPressed: (value) {
+              searchRestaurant = value;
+            },
+            hintText: "Search Restaurant by Name",
+            prefixIcon: fullnameIcon,
+            isPassword: false,
+            isPhone: false,
+            validatefunc: (String? value) {
+              return null;
+            },
+            suffixIcon: Icons.search_outlined,
+            suffixIconColor: appBlack,
+            suffixIconOnTap: () async {
+
+            },
           ),
           SizedBox(height: deviceHeight * 0.03,),
           Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: widget.restaurantList.length,
+                itemCount: filteredrestaurantsList.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index){
                   return Column(
@@ -152,7 +164,7 @@ class _RestaurantListState extends State<RestaurantList> {
                                     Expanded(
                                       flex: 5,
                                       child: text(
-                                          widget.restaurantList[index]['name'][0],
+                                          filteredrestaurantsList[index]['name'][0],
                                           isBold: true,
                                           maxLine: 2
                                       ),
@@ -161,7 +173,7 @@ class _RestaurantListState extends State<RestaurantList> {
                                       flex: 1,
                                       child: Row(
                                         children: [
-                                          text(widget.restaurantList[index]['aggregate_rating'][0].toString()),
+                                          text(filteredrestaurantsList[index]['aggregate_rating'][0].toString()),
                                           SizedBox(width: deviceWidth * 0.01),
                                           Icon(Icons.star, color: Colors.yellow, size: 15.0,),
                                         ],
@@ -170,23 +182,30 @@ class _RestaurantListState extends State<RestaurantList> {
                                   ],
                                 ),
                                 SizedBox(height: deviceHeight * 0.15 * 0.01,),
-                                Row(
-                                  children: [
-                                    Icon(Icons.location_on, size: 25.0,),
-                                    SizedBox(width: deviceWidth * 0.01),
-                                    Flexible(
-                                      child: text(
-                                        widget.restaurantList[index]['address'][0],
-                                        isBold: true,
-                                        maxLine: 2,
-                                        fontSize: textSizeSmall,
+                                GestureDetector(
+                                  onTap: () async {
+                                    String googleMapslocationUrl = "https://www.google.com/maps/search/?api=1&query=${filteredrestaurantsList[index]['address'][0]}";
+                                    Uri encodedURl = Uri.parse(googleMapslocationUrl);
+                                    await launchUrl(encodedURl);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.location_on, size: 25.0,),
+                                      SizedBox(width: deviceWidth * 0.01),
+                                      Flexible(
+                                        child: text(
+                                          filteredrestaurantsList[index]['address'][0],
+                                          isBold: true,
+                                          maxLine: 2,
+                                          fontSize: textSizeSmall,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 SizedBox(height: deviceHeight * 0.15 * 0.01,),
                                 text(
-                                  widget.restaurantList[index]['cuisines'][0],
+                                  filteredrestaurantsList[index]['cuisines'][0],
                                   isBold: true,
                                   maxLine: 2,
                                   fontSize: textSizeSmall,
@@ -195,7 +214,7 @@ class _RestaurantListState extends State<RestaurantList> {
                                 SizedBox(height: deviceHeight * 0.15 * 0.02,),
                                 RichText(
                                   text: TextSpan(
-                                      text: "$rupees ${widget.restaurantList[index]['average_cost_for_two'][0]} ",
+                                      text: "$rupees ${filteredrestaurantsList[index]['average_cost_for_two'][0]} ",
                                       style: TextStyle(
                                           color: Colors.cyan,
                                           fontSize: 16.0

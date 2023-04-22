@@ -95,7 +95,7 @@ class _HotelListState extends State<HotelList> {
       floatingActionButton: selected != null ? FloatingActionButton.extended(
         onPressed: () async {
           final response = await http.post(
-            Uri.parse('http://192.168.29.232:8000/itinerary/'),
+            Uri.parse('http://$ipAddress/itinerary/'),
             headers: <String, String>{
               'accept': 'application/json',
               'Content-Type': 'application/json',

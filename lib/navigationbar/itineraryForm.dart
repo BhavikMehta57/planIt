@@ -104,7 +104,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
   }
 
   Future<void> getHotelsList(String city) async {
-    String url = "http://192.168.29.232:8000/hotels/$city";
+    String url = "http://192.168.103.109:8000/hotels/$city";
     final response = await http.get(Uri.parse(url), headers: {"Accept" : "application/json"});
     var responseData = json.decode(response.body);
     //print(responseData['result']['data']);
