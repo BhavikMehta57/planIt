@@ -397,27 +397,29 @@ async def getItinerary(info: Info):
 
             if(currenttimebwd > currenttimefwd):
                 # print("Entered currenttimebwd > currenttimefwd")
-                final, unmatch = addExtra(best_path,fwd,ctl,ltl)
                 ctl = currenttimefwdlist
                 ltl = leavingtimefwdlist
+                final, unmatch, ctl, ltl = addExtra(best_path,fwd,ctl,ltl)
+
                 if (len(final)<=len(bwd)):
-                    final, unmatch = addExtra(best_path,bwd,ctl,ltl)
                     ctl = currenttimebwdlist
                     ltl = leavingtimebwdlist
+                    final, unmatch, ctl, ltl = addExtra(best_path,bwd,ctl,ltl)
 
             else:
-                final, unmatch = addExtra(best_path,bwd,ctl,ltl)
                 ctl = currenttimebwdlist
                 ltl = leavingtimebwdlist
+                final, unmatch, ctl, ltl = addExtra(best_path,bwd,ctl,ltl)
 
                 if (len(final)<=len(fwd)):
-                    final, unmatch = addExtra(best_path,fwd,ctl,ltl)
                     ctl = currenttimefwdlist
                     ltl = leavingtimefwdlist
+                    final, unmatch, ctl, ltl = addExtra(best_path,fwd,ctl,ltl)
 
             if 0 in final:
                 final.remove(0)
             len_final = len(final)
+            print("LENGTH OF FINAL PATH", len_final)
             return final,ctl[:len_final],ltl[:len_final],unmatch
 
         def addExtra(best_path,place_list, ctl, ltl):
@@ -444,7 +446,7 @@ async def getItinerary(info: Info):
                     place_list.append(unmatch[i])
                     unmatch2.remove(unmatch[i])
 
-            return place_list, unmatch2
+            return place_list, unmatch2, ctl, ltl
 
 
         dist, path = TSP(graph,0)
