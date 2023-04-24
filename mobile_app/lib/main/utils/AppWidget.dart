@@ -349,6 +349,21 @@ Widget shadowButton(String name, void Function()? function, Color color, double 
   );
 }
 
+Widget filterButton(String name, void Function()? function, Color color, double deviceHeight) {
+  return MaterialButton(
+    height: deviceHeight * 0.06,
+    minWidth: double.infinity,
+    child: text(name,
+        fontSize: textSizeLargeMedium,
+        textColor: appColorPrimary,
+        fontFamily: fontMedium),
+    textColor: whiteColor,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+    color: color,
+    onPressed: function,
+  );
+}
+
 Widget toolBarTitle(var title, {textColor = appColorPrimary}) {
   return text(title,
       fontSize: textSizeNormal, fontFamily: fontBold, textColor: textColor);

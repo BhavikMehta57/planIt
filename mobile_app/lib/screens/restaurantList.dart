@@ -45,9 +45,10 @@ class _RestaurantListState extends State<RestaurantList> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int? selected;
-  String? searchRestaurant;
+  String? searchRestaurant = "";
   List allRestaurantsList = [];
   List filteredrestaurantsList = [];
+  String? sort = "bestMatch";
 
   @override
   void initState() {
@@ -61,6 +62,38 @@ class _RestaurantListState extends State<RestaurantList> {
     super.dispose();
   }
 
+  Future<void> sortRestaurants() async {
+    List tempRestaurantList = List.from(allRestaurantsList);
+    if (sort == "bestMatch") {} else if (sort == "priceAscending") {
+      tempRestaurantList.sort((a, b) => double.parse(a["average_cost_for_two"][0].toString()).compareTo(double.parse(b["average_cost_for_two"][0].toString())));
+    } else if (sort == "priceDescending") {
+      tempRestaurantList.sort((a, b) => double.parse(b["average_cost_for_two"][0].toString()).compareTo(double.parse(a["average_cost_for_two"][0].toString())));
+    } else if (sort == "ratingAscending") {
+      tempRestaurantList.sort((a, b) => double.parse(a["aggregate_rating"][0].toString()).compareTo(double.parse(b["aggregate_rating"][0].toString())));
+    } else if (sort == "ratingDescending") {
+      tempRestaurantList.sort((a, b) => double.parse(b["aggregate_rating"][0].toString()).compareTo(double.parse(a["aggregate_rating"][0].toString())));
+    } else {}
+    setState((){
+      filteredrestaurantsList = List.from(tempRestaurantList);
+    });
+  }
+
+  Future<void> sortFilteredRestaurants() async {
+    List tempRestaurantList = List.from(filteredrestaurantsList);
+    if (sort == "bestMatch") {} else if (sort == "priceAscending") {
+      tempRestaurantList.sort((a, b) => double.parse(a["average_cost_for_two"][0].toString()).compareTo(double.parse(b["average_cost_for_two"][0].toString())));
+    } else if (sort == "priceDescending") {
+      tempRestaurantList.sort((a, b) => double.parse(b["average_cost_for_two"][0].toString()).compareTo(double.parse(a["average_cost_for_two"][0].toString())));
+    } else if (sort == "ratingAscending") {
+      tempRestaurantList.sort((a, b) => double.parse(a["aggregate_rating"][0].toString()).compareTo(double.parse(b["aggregate_rating"][0].toString())));
+    } else if (sort == "ratingDescending") {
+      tempRestaurantList.sort((a, b) => double.parse(b["aggregate_rating"][0].toString()).compareTo(double.parse(a["aggregate_rating"][0].toString())));
+    } else {}
+    setState((){
+      filteredrestaurantsList = List.from(tempRestaurantList);
+    });
+  }
+  
   Future<void> filterRestaurants(String searchValue) async {
     List tempRestaurantsList = List.from(allRestaurantsList);
     tempRestaurantsList.retainWhere((element) => element['name'][0].toString().toLowerCase().contains(searchValue.toLowerCase()));
@@ -149,9 +182,68 @@ class _RestaurantListState extends State<RestaurantList> {
                 child: GestureDetector(
                   onTap: () async {
                     showModalBottomSheet(context: context, builder: (context) {
-                      return Container(
-                        color: appWhite,
-                      );
+                      return StatefulBuilder(builder: (context, setState) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                          color: appColorPrimary,
+                          child: Column(
+                            children: [
+                              text("Sort By", fontSize: textSizeLarge),
+                              ListTile(
+                                title: text("Best Match"),
+                                trailing: Radio(value: "bestMatch", groupValue: sort, onChanged: (value) async {
+                                  setState(() {
+                                    sort = value.toString();
+                                  });
+                                }),
+                              ),
+                              ListTile(
+                                title: text("Cost: Low to High"),
+                                trailing: Radio(value: "priceAscending", groupValue: sort, onChanged: (value) async {
+                                  setState(() {
+                                    sort = value.toString();
+                                  });
+                                }),
+                              ),
+                              ListTile(
+                                title: text("Cost: High to Low"),
+                                trailing: Radio(value: "priceDescending", groupValue: sort, onChanged: (value) async {
+                                  setState(() {
+                                    sort = value.toString();
+                                  });
+                                }),
+                              ),
+                              ListTile(
+                                title: text("Rating: Best to Worst"),
+                                trailing: Radio(value: "ratingDescending", groupValue: sort, onChanged: (value) async {
+                                  setState(() {
+                                    sort = value.toString();
+                                  });
+                                }),
+                              ),
+                              ListTile(
+                                title: text("Rating: Worst to Best"),
+                                trailing: Radio(value: "ratingAscending", groupValue: sort, onChanged: (value) async {
+                                  setState(() {
+                                    sort = value.toString();
+                                  });
+                                }),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                                child: filterButton("Sort", () async {
+                                  if (searchRestaurant == "") {
+                                    await sortRestaurants();
+                                  } else {
+                                    await sortFilteredRestaurants();
+                                  }
+                                  Navigator.pop(context);
+                                }, appWhite, deviceHeight),
+                              )
+                            ],
+                          ),
+                        );
+                      });
                     });
                   },
                   child: Icon(

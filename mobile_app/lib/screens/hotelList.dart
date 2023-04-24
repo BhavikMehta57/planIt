@@ -47,9 +47,11 @@ class _HotelListState extends State<HotelList> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int? selected;
-  String? searchHotel;
+  String? searchHotel = "";
   List allHotelsList = [];
   List filteredhotelsList = [];
+  String? sort = "bestMatch";
+
 
   @override
   void initState() {
@@ -63,6 +65,38 @@ class _HotelListState extends State<HotelList> {
     super.dispose();
   }
 
+  Future<void> sortHotels() async {
+    List tempHotelList = List.from(allHotelsList);
+    if (sort == "bestMatch") {} else if (sort == "priceAscending") {
+      tempHotelList.sort((a, b) => double.parse(a["Price"].toString().replaceAll(",", "")).compareTo(double.parse(b["Price"].toString().replaceAll(",", ""))));
+    } else if (sort == "priceDescending") {
+      tempHotelList.sort((a, b) => double.parse(b["Price"].toString().replaceAll(",", "")).compareTo(double.parse(a["Price"].toString().replaceAll(",", ""))));
+    } else if (sort == "ratingAscending") {
+      tempHotelList.sort((a, b) => double.parse(a["Rating"].toString()).compareTo(double.parse(b["Rating"].toString())));
+    } else if (sort == "ratingDescending") {
+      tempHotelList.sort((a, b) => double.parse(b["Rating"].toString()).compareTo(double.parse(a["Rating"].toString())));
+    } else {}
+    setState((){
+      filteredhotelsList = List.from(tempHotelList);
+    });
+  }
+
+  Future<void> sortFilteredHotels() async {
+    List tempHotelList = List.from(filteredhotelsList);
+    if (sort == "bestMatch") {} else if (sort == "priceAscending") {
+      tempHotelList.sort((a, b) => double.parse(a["Price"].toString().replaceAll(",", "")).compareTo(double.parse(b["Price"].toString().replaceAll(",", ""))));
+    } else if (sort == "priceDescending") {
+      tempHotelList.sort((a, b) => double.parse(b["Price"].toString().replaceAll(",", "")).compareTo(double.parse(a["Price"].toString().replaceAll(",", ""))));
+    } else if (sort == "ratingAscending") {
+      tempHotelList.sort((a, b) => double.parse(a["Rating"].toString()).compareTo(double.parse(b["Rating"].toString())));
+    } else if (sort == "ratingDescending") {
+      tempHotelList.sort((a, b) => double.parse(b["Rating"].toString()).compareTo(double.parse(a["Rating"].toString())));
+    } else {}
+    setState((){
+      filteredhotelsList = List.from(tempHotelList);
+    });
+  }
+
   Future<void> filterHotels(String searchValue) async {
     List tempHotelsList = List.from(allHotelsList);
     tempHotelsList.retainWhere((element) => element['Name'].toString().toLowerCase().contains(searchValue.toLowerCase()));
@@ -70,6 +104,7 @@ class _HotelListState extends State<HotelList> {
       filteredhotelsList = List.from(tempHotelsList);
       selected = null;
     });
+    await sortFilteredHotels();
   }
 
   showSuccessfulApplicationDialog(String title, String message){
@@ -193,9 +228,68 @@ class _HotelListState extends State<HotelList> {
                   child: GestureDetector(
                     onTap: () async {
                       showModalBottomSheet(context: context, builder: (context) {
-                        return Container(
-                          color: appWhite,
-                        );
+                        return StatefulBuilder(builder: (context, setState) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                            color: appColorPrimary,
+                            child: Column(
+                              children: [
+                                text("Sort By", fontSize: textSizeLarge),
+                                ListTile(
+                                  title: text("Best Match"),
+                                  trailing: Radio(value: "bestMatch", groupValue: sort, onChanged: (value) async {
+                                    setState(() {
+                                      sort = value.toString();
+                                    });
+                                  }),
+                                ),
+                                ListTile(
+                                  title: text("Price: Low to High"),
+                                  trailing: Radio(value: "priceAscending", groupValue: sort, onChanged: (value) async {
+                                    setState(() {
+                                      sort = value.toString();
+                                    });
+                                  }),
+                                ),
+                                ListTile(
+                                  title: text("Price: High to Low"),
+                                  trailing: Radio(value: "priceDescending", groupValue: sort, onChanged: (value) async {
+                                    setState(() {
+                                      sort = value.toString();
+                                    });
+                                  }),
+                                ),
+                                ListTile(
+                                  title: text("Rating: Best to Worst"),
+                                  trailing: Radio(value: "ratingDescending", groupValue: sort, onChanged: (value) async {
+                                    setState(() {
+                                      sort = value.toString();
+                                    });
+                                  }),
+                                ),
+                                ListTile(
+                                  title: text("Rating: Worst to Best"),
+                                  trailing: Radio(value: "ratingAscending", groupValue: sort, onChanged: (value) async {
+                                    setState(() {
+                                      sort = value.toString();
+                                    });
+                                  }),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                                  child: filterButton("Sort", () async {
+                                    if (searchHotel == "") {
+                                      await sortHotels();
+                                    } else {
+                                      await sortFilteredHotels();
+                                    }
+                                    Navigator.pop(context);
+                                  }, appWhite, deviceHeight),
+                                )
+                              ],
+                            ),
+                          );
+                        });
                       });
                     },
                     child: Icon(

@@ -180,15 +180,15 @@ class _ItineraryPageState extends State<ItineraryPage> {
                 scrollDirection: Axis.vertical,
                   itemCount: itinerary.isEmpty ? 0 : itinerary[selectedIndex]['places']['Place'].length,
                   itemBuilder: (context, index){
-                  bool memory = true;
-                  String img = itinerary[selectedIndex]['places']['Image'][index];
-                  String new_img = "";
-                  if(img.startsWith("data:image/jpeg;base64,")){
-                    memory = true;
-                    new_img = img.substring(23);
-                  } else {
-                    memory = false;
-                  }
+                  // bool memory = true;
+                  // String img = itinerary[selectedIndex]['places']['Image'][index];
+                  // String new_img = "";
+                  // if(img.startsWith("data:image/jpeg;base64,")){
+                  //   memory = true;
+                  //   new_img = img.substring(23);
+                  // } else {
+                  //   memory = false;
+                  // }
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -211,7 +211,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                         color: Colors.blue,
                                         // border: Border.all(color: appWhite),
                                       ),
-                                      child: text("9:00", fontSize: textSizeSmall, isCentered: true),
+                                      child: text("${itinerary[selectedIndex]['places']['Arrival Time'][index].toString().split(".")[0]}:${(double.parse(itinerary[selectedIndex]['places']['Arrival Time'][index].toString().split(".")[1]) * 60 / 100).toString().split(".")[0]}", fontSize: textSizeSmall, isCentered: true),
                                     ),
                                     Spacer(),
                                     text("${(itinerary[selectedIndex]['places']['Avg time spent'][index] * 60).round().toString()} mins", fontSize: textSizeSmall, isCentered: true)
@@ -234,17 +234,32 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
+                                        // Expanded(
+                                        //   flex: 2,
+                                        //   child: Container(
+                                        //     decoration: BoxDecoration(
+                                        //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                        //       image: memory ? DecorationImage(
+                                        //         fit: BoxFit.cover,
+                                        //         image: MemoryImage(base64Decode(new_img)),
+                                        //       ) : DecorationImage(
+                                        //         fit: BoxFit.cover,
+                                        //         image: NetworkImage(img),
+                                        //       ),
+                                        //     ),
+                                        //     child: Container(
+                                        //       height: deviceHeight * 0.18,
+                                        //     ),
+                                        //   ),
+                                        // ),
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                              image: memory ? DecorationImage(
+                                              image: DecorationImage(
                                                 fit: BoxFit.cover,
-                                                image: MemoryImage(base64Decode(new_img)),
-                                              ) : DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: NetworkImage(img),
+                                                image: AssetImage("assets/images/Mumbai.jpg"),
                                               ),
                                             ),
                                             child: Container(
