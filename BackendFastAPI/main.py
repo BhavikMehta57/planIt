@@ -213,8 +213,6 @@ async def getItinerary(info: Info):
 
         newDate = datetime.datetime.strptime(startDate, "%Y-%m-%d") + datetime.timedelta(days = i)
 
-        print(places)
-
         iti_day['Place'] = places
         iti_day['City'] = city
         iti_day['State'] = state
@@ -225,13 +223,11 @@ async def getItinerary(info: Info):
         iti_day['Open Time'] = open
         iti_day['Close Time'] = close
         iti_day['Best Time to Visit'] = btv
-        iti_day['Type'] = typ 
+        iti_day['Type'] = typ
         iti_day['Avg time spent'] = avg
         iti_day['Avg Cost'] = cost
         iti_day['Free/Paid'] = fp
         # iti_day['Image'] = img
-        
-        print(iti_day)
 
         def distance(lat1, lat2, lon1, lon2):
             lon1 = radians(lon1)
@@ -242,9 +238,9 @@ async def getItinerary(info: Info):
             dlon = lon2 - lon1
             dlat = lat2 - lat1
             a = sin(dlat / 2)*2 + cos(lat1) * cos(lat2) * sin(dlon / 2)*2
-        
+
             c = 2 * asin(sqrt(abs(a)))
-            
+
             r = 6378
             return(c * r)
 
@@ -257,13 +253,13 @@ async def getItinerary(info: Info):
                 else:
                     weight = distance(iti_day["Latitude"][i],iti_day["Latitude"][iti_day.Place == place],iti_day["Longitude"][i],iti_day["Longitude"][iti_day.Place == place])
                     weights.append(weight)
-            return weights    
-        
+            return weights
+
         graph = []
         tt = []
 
         places = iti_day["Place"]
-        for place in places:  
+        for place in places:
             graph.append(weights(place))
 
         for i in graph:
@@ -275,13 +271,12 @@ async def getItinerary(info: Info):
         final_list = []
         time_format = "%H:%M"
         cities = len(iti_day)
-        print("CITIES " + str(cities))
         openingtimes = []
         closingtimes = []
         avgtimes = []
         ratings = []
         count = 1
-        start_time = 9.5
+        start_time = 9.50
         global current_time
         current_time = start_time
         current_time = start_time
@@ -289,7 +284,7 @@ async def getItinerary(info: Info):
             time = datetime.datetime.strptime(i, time_format)
             decimal_hours = time.hour + time.minute/60
             openingtimes.append(decimal_hours)
-        
+
         for i in iti_day["Close Time"]:
             time = datetime.datetime.strptime(i, time_format)
             decimal_hours = time.hour + time.minute/60
@@ -299,53 +294,57 @@ async def getItinerary(info: Info):
         for i in iti_day["Rating"]:
             ratings.append(i)
 
-        def TSP(graph, s): 
+        def TSP(graph, s):
             global current_time
             global start_time
             # keep all vertex other than the starting point
-            vertex = [] 
+            vertex = []
 
-            # traverse the diagram 
-            for i in range(cities): 
-                if i != s: 
-                    vertex.append(i) 
-        
+            # traverse the diagram
+            for i in range(cities):
+                if i != s:
+                    vertex.append(i)
+
             # keep minimum weight
-            min_path = maxsize 
+            min_path = maxsize
 
             next_permutation = permutations(vertex)
-            
+
             best_path = []
 
             temp = 0
             for i in next_permutation:
-                # store current Path weight(cost) 
+                # store current Path weight(cost)
                 current_pathweight = 0
-                
-                # compute current path weight 
-                k = s 
-                
-                for j in i: 
-                    current_pathweight += graph[k][j] 
-                    k = j 
-                current_pathweight += graph[k][s] 
-                
-                # update minimum 
+
+                # compute current path weight
+                k = s
+
+                for j in i:
+                    current_pathweight += graph[k][j]
+                    k = j
+                current_pathweight += graph[k][s]
+
+                # update minimum
                 if current_pathweight < min_path:
                     min_path = current_pathweight
                     best_path = [s]
                     best_path.extend(list(i))
                     best_path.append(s)
-            
+
             print("Initial Path accoridng to TSP = ",best_path)
             for i in best_path:
                 final_list.append(iti_day['Place'][i])
-            
+
             return final_list,best_path
 
         def bestpath_time(best_path):
             global current_time
             global start_time
+            currenttimefwdlist = []
+            currenttimebwdlist = []
+            leavingtimefwdlist = []
+            leavingtimebwdlist = []
             final = []
             fwd = []
             bwd = []
@@ -353,15 +352,19 @@ async def getItinerary(info: Info):
             print("============================= \n Forward Path")
             print(best_path)
             for i in range(1,len(best_path)):
-                
+
                 j = i-1
                 if (current_time >= openingtimes[best_path[i]]) and (current_time + avgtimes[best_path[i]] < closingtimes[best_path[i]]):
-                    
-                    current_time = round(current_time + avgtimes[best_path[i]] ,2)
-                    
+
+                    currenttimefwdlist.append(format(current_time, ".2f"))
+                    current_time = current_time + avgtimes[best_path[i]]
+                    leavingtimefwdlist.append(format(current_time, ".2f"))
+                    # travellingTime = round(distance(lat[best_path[i]], lat[best_path[j]], long[best_path[i]], long[best_path[j]]), 2)
+                    current_time = round(current_time + 0.75, 2)
+
                     currenttimefwd = current_time
                     fwd.append(best_path[i])
-                    
+
             avg_fwd_rating = 0
             for i in range(1,len(fwd)):
                 avg_fwd_rating += ratings[best_path[i]]
@@ -369,82 +372,110 @@ async def getItinerary(info: Info):
 
             print("********************************* \n Backward Path")
             print(best_path)
-            current_time = 9.5
+            current_time = 9.50
             for i in range(1,len(best_path)):
-                
+
                 j = i-1
                 if (current_time >= openingtimes[best_path[i]]) and (current_time + avgtimes[best_path[i]] < closingtimes[best_path[i]]):
-                    
-                    current_time = round(current_time + avgtimes[best_path[i]] ,2)
-                    
+
+                    currenttimebwdlist.append(format(current_time, ".2f"))
+                    current_time = current_time + avgtimes[best_path[i]]
+                    leavingtimebwdlist.append(format(current_time, ".2f"))
+                    # travellingTime = round(distance(lat[best_path[i]], lat[best_path[j]], long[best_path[i]], long[best_path[j]]) / 20, 2)
+                    current_time = round(current_time + 0.75, 2)
+
                     bwd.append(best_path[i])
                     currenttimebwd = current_time
             avg_bwd_rating = 0
             for i in range(1,len(bwd)):
                     avg_bwd_rating += ratings[best_path[i]]
-            print("Forward List: ", fwd)
-            print("Backward List: ",bwd)
+            print("Forward List: ", fwd,currenttimefwdlist,leavingtimefwdlist)
+            print("Backward List: ",bwd,currenttimebwdlist,leavingtimebwdlist)
+
+            ctl=[]
+            ltl=[]
 
             if(currenttimebwd > currenttimefwd):
-                
-                final = addExtra(best_path,fwd)
-                if(len(final)<=len(bwd)):
-                    final = addExtra(best_path,bwd)
-            else:
-                final = addExtra(best_path,bwd)
-            
-                if(len(final)<=len(fwd)):
-                    final = addExtra(best_path,fwd)
-            if( 0 in final):
-                final.remove(0)
-            return final
+                # print("Entered currenttimebwd > currenttimefwd")
+                final, unmatch = addExtra(best_path,fwd,ctl,ltl)
+                ctl = currenttimefwdlist
+                ltl = leavingtimefwdlist
+                if (len(final)<=len(bwd)):
+                    final, unmatch = addExtra(best_path,bwd,ctl,ltl)
+                    ctl = currenttimebwdlist
+                    ltl = leavingtimebwdlist
 
-        def addExtra(best_path,place_list):
+            else:
+                final, unmatch = addExtra(best_path,bwd,ctl,ltl)
+                ctl = currenttimebwdlist
+                ltl = leavingtimebwdlist
+
+                if (len(final)<=len(fwd)):
+                    final, unmatch = addExtra(best_path,fwd,ctl,ltl)
+                    ctl = currenttimefwdlist
+                    ltl = leavingtimefwdlist
+
+            if 0 in final:
+                final.remove(0)
+            len_final = len(final)
+            return final,ctl[:len_final],ltl[:len_final],unmatch
+
+        def addExtra(best_path,place_list, ctl, ltl):
             global current_time
             global start_time
             unmatch = set(best_path) - set(place_list)
             if (0 in unmatch):
                 unmatch.remove(0)
             unmatch = list(unmatch)
+            unmatch2 = list(unmatch)
             print("----------------------------------------")
             print("Unmatched List Places are = ",unmatch)
             l=len(place_list)
             for i in range(len(unmatch)):
                 j=i+1
                 if (current_time >= openingtimes[unmatch[i]]) and (current_time + avgtimes[unmatch[i]] < closingtimes[unmatch[i]]):
-                
-                    current_time = round(current_time + avgtimes[best_path[i]] ,2)
-                    
-                    place_list.append(unmatch[i])
-                    
 
-            return place_list
-            
-            
+                    ctl.append(format(current_time, ".2f"))
+                    current_time = current_time + avgtimes[best_path[i]]
+                    ltl.append(format(current_time, ".2f"))
+                    # travellingTime = round(distance(lat[best_path[i]], lat[best_path[j]], long[best_path[i]], long[best_path[j]]) / 20, 2)
+                    current_time = round(current_time + 0.75, 2)
+
+                    place_list.append(unmatch[i])
+                    unmatch2.remove(unmatch[i])
+
+            return place_list, unmatch2
+
+
         dist, path = TSP(graph,0)
-        final_path = bestpath_time(path)
+        final_path, final_ctl, final_ltl,unmatch = bestpath_time(path)
         print("-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=")
-        print("FINAL PATH IS ",final_path)
+        print("FINAL PATH IS ",final_path, final_ctl, final_ltl, unmatch)
+        extra_places = iti_day.iloc[unmatch]
         iti_day = iti_day.iloc[final_path]
+        iti_day['Arrival Time'] = final_ctl
+        iti_day['Leaving Time'] = final_ltl
         print(iti_day)
+        print(extra_places)
         print("-=-=-=-=-=-=-=-=-=-=-=-=-=DAY OVER=-=-=-=-=-=-=-=-=-=-=-")
         itinerary.append({
                 "date": newDate.strftime("%Y-%m-%d"),
                 "day": day,
-                "places": iti_day.to_dict('list')
+                "places": iti_day.to_dict('list'),
+                "extra": extra_places.to_dict('list')
             })
 
         iti_day.drop(iti_day.index,inplace=True)
 
-    # db.collection('itineraries').document(itinerary_id).set({
-    #     "Itinerary": itinerary,
-    #     "UserEmail": user,
-    #     "ItineraryID": itinerary_id,
-    #     "Destination": destination,
-    #     "Number of travellers": numberOfTravellers,
-    #     "Number of Days": days,
-    #     "Start Date": startDate,
-    # })
+    db.collection('itineraries').document(itinerary_id).set({
+        "Itinerary": itinerary,
+        "UserEmail": user,
+        "ItineraryID": itinerary_id,
+        "Destination": destination,
+        "Number of travellers": numberOfTravellers,
+        "Number of Days": days,
+        "Start Date": startDate,
+    })
 
     return {
         "result": {
