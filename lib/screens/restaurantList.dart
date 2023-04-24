@@ -61,6 +61,14 @@ class _RestaurantListState extends State<RestaurantList> {
     super.dispose();
   }
 
+  Future<void> filterRestaurants(String searchValue) async {
+    List tempRestaurantsList = List.from(allRestaurantsList);
+    tempRestaurantsList.retainWhere((element) => element['name'][0].toString().toLowerCase().contains(searchValue.toLowerCase()));
+    setState(() {
+      filteredrestaurantsList = List.from(tempRestaurantsList);
+    });
+  }
+
   showSuccessfulApplicationDialog(String title, String message){
     AwesomeDialog(
         dismissOnTouchOutside:false,
@@ -108,23 +116,51 @@ class _RestaurantListState extends State<RestaurantList> {
               )
           ),
           SizedBox(height: deviceHeight * 0.02,),
-          EditText(
-            isPrefixIcon: false,
-            onPressed: (value) {
-              searchRestaurant = value;
-            },
-            hintText: "Search Restaurant by Name",
-            prefixIcon: fullnameIcon,
-            isPassword: false,
-            isPhone: false,
-            validatefunc: (String? value) {
-              return null;
-            },
-            suffixIcon: Icons.search_outlined,
-            suffixIconColor: appBlack,
-            suffixIconOnTap: () async {
-
-            },
+          Row(
+            children: [
+              Expanded(
+                child: EditText(
+                  isPrefixIcon: false,
+                  onPressed: (value) async {
+                    searchRestaurant = value;
+                    await filterRestaurants(value);
+                  },
+                  hintText: "Search Restaurant by Name",
+                  prefixIcon: fullnameIcon,
+                  isPassword: false,
+                  isPhone: false,
+                  validatefunc: (String? value) {
+                    return null;
+                  },
+                  // suffixIcon: Icons.search_outlined,
+                  // suffixIconColor: appBlack,
+                  // suffixIconOnTap: () async {
+                  //
+                  // },
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(right: 20),
+                padding: EdgeInsets.all(5.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: appWhite),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
+                child: GestureDetector(
+                  onTap: () async {
+                    showModalBottomSheet(context: context, builder: (context) {
+                      return Container(
+                        color: appWhite,
+                      );
+                    });
+                  },
+                  child: Icon(
+                    Icons.sort_rounded,
+                    color: appWhite,
+                  ),
+                )
+              )
+            ],
           ),
           SizedBox(height: deviceHeight * 0.03,),
           Expanded(

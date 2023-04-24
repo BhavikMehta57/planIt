@@ -55,14 +55,14 @@ class _ItineraryFormState extends State<ItineraryForm> {
   TextEditingController endDateController = TextEditingController();
   String numberOfTravellers = "";
   String budget = "15K - 20K";
-  List<String> areasOfInterest = [];
+  List<String> areasOfInterest = ["Entertainment", "Leisure", "Shopping"];
   Map<String, bool> areasOfInterests = {
     "Religious": false,
     "Heritage": false,
-    "Entertainment": false,
-    "Leisure": false,
+    "Entertainment": true,
+    "Leisure": true,
     "Beaches": false,
-    "Shopping": false,
+    "Shopping": true,
     "Food": false,
     "Nature & Wildlife": false,
     "Art & Museum": false,
@@ -104,7 +104,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
   }
 
   Future<void> getHotelsList(String city) async {
-    String url = "http://192.168.103.109:8000/hotels/$city";
+    String url = "http://$ipAddress/hotels/$city";
     final response = await http.get(Uri.parse(url), headers: {"Accept" : "application/json"});
     var responseData = json.decode(response.body);
     //print(responseData['result']['data']);
@@ -200,8 +200,8 @@ class _ItineraryFormState extends State<ItineraryForm> {
         );
       },
       context: context,
-      initialDate: DateTime.parse(selectedStartDate).add(Duration(days: 2)),
-      firstDate: DateTime.parse(selectedStartDate).add(Duration(days: 2)),
+      initialDate: DateTime.parse(selectedStartDate).add(Duration(days: 0)),
+      firstDate: DateTime.parse(selectedStartDate).add(Duration(days: 0)),
       lastDate: DateTime(2099,12,31),
       helpText: "Select Start Date",
       fieldLabelText: "Enter Start Date",
@@ -271,9 +271,9 @@ class _ItineraryFormState extends State<ItineraryForm> {
                   //   },
                   // ),
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15),
+                    margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                      border: Border.all(color: appColorPrimary, width: 0.0),
+                      // border: Border.all(color: appColorPrimary, width: 0.0),
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     ),
                     child: DropdownButtonFormField2(
@@ -345,9 +345,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
                     readOnly: true,
                     controller: startDateController,
                     isPrefixIcon: false,
-                    onPressed: (value) {
-                      selectedStartDate = value;
-                    },
+                    onPressed: (value) {},
                     hintText: "Start Date",
                     suffixIcon: Icons.calendar_today,
                     suffixIconColor: appColorPrimary,
@@ -369,9 +367,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
                     readOnly: true,
                     controller: endDateController,
                     isPrefixIcon: false,
-                    onPressed: (value) {
-                      selectedEndDate = value;
-                    },
+                    onPressed: (value) {},
                     hintText: "End Date",
                     suffixIcon: Icons.calendar_today,
                     suffixIconColor: appColorPrimary,
@@ -417,8 +413,8 @@ class _ItineraryFormState extends State<ItineraryForm> {
                         child: TextFormField(
                           autofocus: false,
                           validator: (String? value) {
-                            if (areasOfInterest.isEmpty) {
-                              return 'Please select atleast 1 area of interest';
+                            if (areasOfInterest.length < 3) {
+                              return 'Please select atleast 3 areas of interest';
                             }
                             return null;
                           },
@@ -581,9 +577,9 @@ class _ItineraryFormState extends State<ItineraryForm> {
                       setState((){
                         isPlanning = true;
                       });
-                      String docId = nanoid(8);
-                      if(_formKey.currentState!.validate()){
+                      if(_formKey.currentState!.validate() && DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays > 0){
                         int diff = DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays + 1;
+                        String docId = nanoid(8);
                         try {
                           await getHotelsList(destination);
                           await FirebaseFirestore.instance.collection("plannerInput").doc(docId).set({
@@ -622,6 +618,13 @@ class _ItineraryFormState extends State<ItineraryForm> {
                         setState((){
                           isPlanning = false;
                         });
+                        if (DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays < 0) {
+                          const snackBar = SnackBar(
+                            content: Text('End Date cannot be before Start Date'),
+                            duration: Duration(seconds: 10),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
                       }
                     }, appColorPrimary, deviceHeight),
                   ),

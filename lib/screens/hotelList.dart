@@ -46,17 +46,30 @@ class HotelList extends StatefulWidget {
 class _HotelListState extends State<HotelList> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   int? selected;
+  String? searchHotel;
+  List allHotelsList = [];
+  List filteredhotelsList = [];
 
   @override
   void initState() {
     super.initState();
+    allHotelsList = List.from(widget.hotelList);
+    filteredhotelsList = List.from(widget.hotelList);
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> filterHotels(String searchValue) async {
+    List tempHotelsList = List.from(allHotelsList);
+    tempHotelsList.retainWhere((element) => element['Name'].toString().toLowerCase().contains(searchValue.toLowerCase()));
+    setState(() {
+      filteredhotelsList = List.from(tempHotelsList);
+      selected = null;
+    });
   }
 
   showSuccessfulApplicationDialog(String title, String message){
@@ -102,9 +115,9 @@ class _HotelListState extends State<HotelList> {
             },
             body: jsonEncode({
               "city": widget.city,
-              "hotelName": widget.hotelList[selected!]['Name'],
-              "hotelLatitude": widget.hotelList[selected!]['Latitude'].toString(),
-              "hotelLongitude": widget.hotelList[selected!]['Longitude'].toString(),
+              "hotelName": filteredhotelsList[selected!]['Name'],
+              "hotelLatitude": filteredhotelsList[selected!]['Latitude'].toString(),
+              "hotelLongitude": filteredhotelsList[selected!]['Longitude'].toString(),
               "itineraryID": widget.itineraryID
             }),
           );
@@ -147,20 +160,57 @@ class _HotelListState extends State<HotelList> {
               )
           ),
           SizedBox(height: deviceHeight * 0.02,),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            child: text("Search",
-              textColor: appWhite,
-              fontSize: 18.0,
-              fontFamily: fontBold,
-              maxLine: 2,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: EditText(
+                  isPrefixIcon: false,
+                  onPressed: (value) async {
+                    searchHotel = value;
+                    await filterHotels(value);
+                  },
+                  hintText: "Search Hotel by Name",
+                  prefixIcon: fullnameIcon,
+                  isPassword: false,
+                  isPhone: false,
+                  validatefunc: (String? value) {
+                    return null;
+                  },
+                  // suffixIcon: Icons.search_outlined,
+                  // suffixIconColor: appBlack,
+                  // suffixIconOnTap: () async {
+                  //
+                  // },
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.only(right: 20),
+                  padding: EdgeInsets.all(5.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: appWhite),
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  child: GestureDetector(
+                    onTap: () async {
+                      showModalBottomSheet(context: context, builder: (context) {
+                        return Container(
+                          color: appWhite,
+                        );
+                      });
+                    },
+                    child: Icon(
+                      Icons.sort_rounded,
+                      color: appWhite,
+                    ),
+                  )
+              )
+            ],
           ),
           SizedBox(height: deviceHeight * 0.03,),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,
-              itemCount: widget.hotelList.length,
+              itemCount: filteredhotelsList.length,
               shrinkWrap: true,
               itemBuilder: (context, index){
                 return Column(
@@ -171,16 +221,17 @@ class _HotelListState extends State<HotelList> {
                         setState(() {
                           selected = index;
                         });
+                        print(filteredhotelsList[selected!]['Name']);
                         // Navigator.push(
                         //   context,
                         //   MaterialPageRoute(
                         //     builder: (context) {
                         //       return ItineraryPage(
-                        //         itineraryID: widget.hotelList[index]["ItineraryID"],
-                        //         destination: widget.hotelList[index]["Destination"],
-                        //         itinerary: widget.hotelList[index]["Itinerary"],
-                        //         startDate: widget.hotelList[index]["Start Date"],
-                        //         numberOfDays: widget.hotelList[index]["Number of Days"],
+                        //         itineraryID: filteredhotelsList[index]["ItineraryID"],
+                        //         destination: filteredhotelsList[index]["Destination"],
+                        //         itinerary: filteredhotelsList[index]["Itinerary"],
+                        //         startDate: filteredhotelsList[index]["Start Date"],
+                        //         numberOfDays: filteredhotelsList[index]["Number of Days"],
                         //       );
                         //     },
                         //   ),
@@ -207,7 +258,7 @@ class _HotelListState extends State<HotelList> {
                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: NetworkImage(widget.hotelList[index]["Image"]),
+                                    image: NetworkImage(filteredhotelsList[index]["Image"]),
                                   ),
                                 ),
                                 child: Container(
@@ -223,7 +274,7 @@ class _HotelListState extends State<HotelList> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   text(
-                                    widget.hotelList[index]["Name"],
+                                    filteredhotelsList[index]["Name"],
                                     isBold: true,
                                     maxLine: 2
                                   ),
@@ -235,14 +286,14 @@ class _HotelListState extends State<HotelList> {
                                       SizedBox(width: deviceWidth * 0.02),
                                       Icon(Icons.map_outlined),
                                       Spacer(),
-                                      text("${widget.hotelList[index]["Rating"].toString()} / 10"),
+                                      text("${filteredhotelsList[index]["Rating"].toString()} / 10"),
                                       SizedBox(width: deviceWidth * 0.02),
                                     ],
                                   ),
                                   SizedBox(height: deviceHeight * 0.15 * 0.02,),
                                   RichText(
                                     text: TextSpan(
-                                        text: "$rupees ${widget.hotelList[index]["Price"]} ",
+                                        text: "$rupees ${filteredhotelsList[index]["Price"]} ",
                                         style: TextStyle(
                                           color: Colors.cyan,
                                           fontSize: 16.0
