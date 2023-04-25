@@ -42,6 +42,19 @@ app = FastAPI()
 async def root():
     return {"status": "Server Started"}
 
+@app.get("/places")
+async def getPlaces():
+    places = []
+    data = pd.read_csv('Dataset Attributes - All3.csv')
+    data = data.fillna('')
+    places = data.values.tolist()
+    return {
+        "result": {
+            "status": 200,
+            "data": places
+        }
+    }
+
 @app.get("/hotels/{city}")
 async def getHotels(city: str):
     hotels = []

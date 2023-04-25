@@ -62,6 +62,7 @@ class _SignupState extends State<Signup> {
       "isBlocked": false,
       "isProfileComplete": false,
     });
+    await FirebaseAuth.instance.currentUser!.updateDisplayName(fullName);
   }
 
   // Future<void> sendEmail() async {

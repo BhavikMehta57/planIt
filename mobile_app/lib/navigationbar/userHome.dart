@@ -84,105 +84,28 @@ class UserHomeState extends State<UserHome> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: app_Background,
-      drawer: Theme(
-        data: Theme.of(context).copyWith(
-          canvasColor: appColorPrimary,
-          dividerColor: Colors.transparent,
-        ),
-        child: SizedBox(
-          width: deviceWidth * 0.70,
-          child: Drawer(
-            child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.02),
-              children: [
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: appColorPrimary,
-                  ), //BoxDecoration
-                  child: UserAccountsDrawerHeader(
-                    margin: EdgeInsets.zero,
-                    decoration: BoxDecoration(color: appColorPrimary),
-                    accountName: text("Bhavik Mehta",),
-                    accountEmail: text(FirebaseAuth.instance.currentUser!.email.toString()),
-                    currentAccountPictureSize: Size.square(deviceWidth * 0.1),
-                    currentAccountPicture: CircleAvatar(
-                      backgroundColor: appWhite,
-                      child: text(
-                        "B",
-                        isBold: true,
-                        fontSize: 24.0,
-                        isCentered: true,
-                      ), //Text
-                    ), //circleAvatar
-                  ), //UserAccountDrawerHeader
-                ), //DrawerHeader
-                ListTile(
-                  horizontalTitleGap: 0.0,
-                  leading: const Icon(Icons.person),
-                  title: text('Profile', fontSize: 20.0),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  horizontalTitleGap: 0.0,
-                  leading: const Icon(Icons.bookmark_added_rounded),
-                  title: text('Bookmarks', fontSize: 20.0),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  horizontalTitleGap: 0.0,
-                  leading: const Icon(Icons.settings),
-                  title: text('Settings', fontSize: 20.0),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  horizontalTitleGap: 0.0,
-                  leading: const Icon(Icons.mark_chat_read_rounded),
-                  title: text('FAQ', fontSize: 20.0),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  horizontalTitleGap: 0.0,
-                  leading: const Icon(Icons.logout),
-                  title: text('LogOut', fontSize: 20.0),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
       appBar: AppBar(
         iconTheme: IconThemeData(color: appWhite),
         backgroundColor: app_Background,
         title: text("PlanIt", textColor: appWhite, fontSize: textSizeLarge),
         elevation: 0,
-        actions: [
-          GestureDetector(
-            onTap: () async {
-              try {
-                await signUserOut();
-              } catch(err) {
-                return;
-              }
-            },
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                child: text("Logout", textColor: appWhite),
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   GestureDetector(
+        //     onTap: () async {
+        //       try {
+        //         await signUserOut();
+        //       } catch(err) {
+        //         return;
+        //       }
+        //     },
+        //     child: Center(
+        //       child: Container(
+        //         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        //         child: text("Logout", textColor: appWhite),
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton.small(

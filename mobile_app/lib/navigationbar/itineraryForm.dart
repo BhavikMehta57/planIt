@@ -342,9 +342,9 @@ class _ItineraryFormState extends State<ItineraryForm> {
                   ),
                   SizedBox(height: deviceHeight * 0.02),
                   EditText(
-                    onTap: () async {
-                      _pickStartDateDialog();
-                    },
+                    // onTap: () async {
+                    //   _pickStartDateDialog();
+                    // },
                     readOnly: true,
                     controller: startDateController,
                     isPrefixIcon: false,
@@ -367,9 +367,9 @@ class _ItineraryFormState extends State<ItineraryForm> {
                   ),
                   SizedBox(height: deviceHeight * 0.02),
                   EditText(
-                    onTap: () async {
-                      _pickEndDateDialog();
-                    },
+                    // onTap: () async {
+                    //   _pickEndDateDialog();
+                    // },
                     readOnly: true,
                     controller: endDateController,
                     isPrefixIcon: false,
@@ -583,7 +583,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
                       setState((){
                         isPlanning = true;
                       });
-                      if(_formKey.currentState!.validate() && DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays > 0){
+                      if(_formKey.currentState!.validate() && DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays >= 0){
                         int diff = DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays + 1;
                         String docId = nanoid(8);
                         try {
