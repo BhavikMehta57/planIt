@@ -128,7 +128,7 @@ async def getItinerary(info: Info):
     hotel_long = float(info.hotelLongitude)
     hotel_name = info.hotelName
 
-    data = pd.read_csv('Dataset Attributes - All2.csv')
+    data = pd.read_csv('Dataset Attributes - All3.csv')
 
     data = data.loc[data['City'] == destination] 
     data = data.loc[data['Type'].isin(current)]
@@ -162,7 +162,7 @@ async def getItinerary(info: Info):
             'Avg time spent': 0,
             'Avg Cost': ' ',
             'Free/Paid': ' ', 
-            # 'Image': ' ',
+            'Images': ' ',
         }, index =[0])
 
     kmeans.fit(x)
@@ -193,7 +193,7 @@ async def getItinerary(info: Info):
         typ = ['']
         cost = ['']
         fp = ['']
-        # img = dwc[dwc.Cluster == i]['Image'].to_numpy()
+        img = ['']
 
         places = np.append(places, dwc[dwc.Cluster == i]['Place'].to_numpy())
         city = np.append(city, dwc[dwc.Cluster == i]['City'].to_numpy())
@@ -209,7 +209,7 @@ async def getItinerary(info: Info):
         typ = np.append(typ, dwc[dwc.Cluster == i]['Type'].to_numpy())
         cost = np.append(cost, dwc[dwc.Cluster == i]['Avg Cost'].to_numpy())
         fp = np.append(fp, dwc[dwc.Cluster == i]['Free/Paid'].to_numpy())
-        # img = dwc[dwc.Cluster == i]['Image'].to_numpy()
+        img = np.append(img, dwc[dwc.Cluster == i]['Images'].to_numpy())
 
         newDate = datetime.datetime.strptime(startDate, "%Y-%m-%d") + datetime.timedelta(days = i)
 
@@ -227,7 +227,7 @@ async def getItinerary(info: Info):
         iti_day['Avg time spent'] = avg
         iti_day['Avg Cost'] = cost
         iti_day['Free/Paid'] = fp
-        # iti_day['Image'] = img
+        iti_day['Images'] = img
 
         def distance(lat1, lat2, lon1, lon2):
             lon1 = radians(lon1)

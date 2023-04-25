@@ -51,6 +51,7 @@ class _HotelListState extends State<HotelList> {
   List allHotelsList = [];
   List filteredhotelsList = [];
   String? sort = "bestMatch";
+  bool isPlanning = false;
 
 
   @override
@@ -130,7 +131,25 @@ class _HotelListState extends State<HotelList> {
   Widget build(BuildContext context) {
     final double deviceHeight = MediaQuery.of(context).size.height;
     final double deviceWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return isPlanning ? Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: app_Background,
+      body: Container(
+        margin: EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+                height: 50.0,
+                width: 50.0,
+                child: CircularProgressIndicator(color: appWhite,)),
+            SizedBox(height: 20.0,),
+            text("Please wait while we generate an itinerary for you...", fontSize: 24.0, fontFamily: fontBold, maxLine: 3, isCentered: true),
+          ],
+        ),
+      ),
+    ) : Scaffold(
       key: _scaffoldKey,
       backgroundColor: app_Background,
       appBar: AppBar(
@@ -142,35 +161,52 @@ class _HotelListState extends State<HotelList> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: selected != null ? FloatingActionButton.extended(
         onPressed: () async {
-          final response = await http.post(
-            Uri.parse('http://$ipAddress/itinerary/'),
-            headers: <String, String>{
-              'accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              "city": widget.city,
-              "hotelName": filteredhotelsList[selected!]['Name'],
-              "hotelLatitude": filteredhotelsList[selected!]['Latitude'].toString(),
-              "hotelLongitude": filteredhotelsList[selected!]['Longitude'].toString(),
-              "itineraryID": widget.itineraryID
-            }),
-          );
-          var responseData = json.decode(response.body);
-          var result = responseData['result']['data'];
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return ItineraryPage(
-                  itineraryID: result['itineraryID'],
-                  destination: result["destination"],
-                  startDate: result["startDate"],
-                  numberOfDays: result["numberOfDays"],
-                );
+          try {
+            setState(() {
+              isPlanning = true;
+            });
+            final response = await http.post(
+              Uri.parse('http://$ipAddress/itinerary/'),
+              headers: <String, String>{
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
               },
-            ),
-          );
+              body: jsonEncode({
+                "city": widget.city,
+                "hotelName": filteredhotelsList[selected!]['Name'],
+                "hotelLatitude": filteredhotelsList[selected!]['Latitude'].toString(),
+                "hotelLongitude": filteredhotelsList[selected!]['Longitude'].toString(),
+                "itineraryID": widget.itineraryID
+              }),
+            );
+            var responseData = json.decode(response.body);
+            var result = responseData['result']['data'];
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ItineraryPage(
+                    itineraryID: result['itineraryID'],
+                    destination: result["destination"],
+                    startDate: result["startDate"],
+                    numberOfDays: result["numberOfDays"],
+                  );
+                },
+              ),
+            );
+            setState(() {
+              isPlanning = false;
+            });
+          } catch(e) {
+            const snackBar = SnackBar(
+              content: Text('Planning Failed\nPlease check your internet connection'),
+              duration: Duration(seconds: 10),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            setState(() {
+              isPlanning = false;
+            });
+          }
         },
         label: Row(
           children: [

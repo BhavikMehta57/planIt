@@ -82,113 +82,122 @@ class _ItineraryPageState extends State<ItineraryPage> {
         title: text("ITINERARY", textColor: appWhite, isCentered: true, fontSize: textSizeLarge),
         elevation: 0,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: deviceHeight * 0.02,),
-          // Container(
-          //   margin: EdgeInsets.symmetric(horizontal: 20),
-          //   child: text("YOUR RECENT TRIPS(2)",
-          //     textColor: appWhite,
-          //     fontSize: 18.0,
-          //     fontFamily: fontBold,
-          //     maxLine: 2,
-          //   ),
-          // ),
-          SizedBox(
-            height: deviceHeight * 0.08,
-            child: ListView.builder(
-                itemCount: widget.numberOfDays,
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemBuilder: (context, index){
-                  DateTime newDate = DateTime.parse(widget.startDate).add(Duration(days: index));
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              selectedIndex == index ? Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
-                                padding: EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: appWhite,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: appWhite),
-                                  //borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                ),
-                                child: text((newDate.day).toString(), textColor: appColorPrimary),
-                              )
-                                  :
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedIndex = index;
-                                  });
-                                },
-                                child: Container(
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: deviceHeight * 0.02,),
+            // Container(
+            //   margin: EdgeInsets.symmetric(horizontal: 20),
+            //   child: text("YOUR RECENT TRIPS(2)",
+            //     textColor: appWhite,
+            //     fontSize: 18.0,
+            //     fontFamily: fontBold,
+            //     maxLine: 2,
+            //   ),
+            // ),
+            SizedBox(
+              height: deviceHeight * 0.12,
+              child: ListView.builder(
+                  itemCount: widget.numberOfDays,
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index){
+                    DateTime newDate = DateTime.parse(widget.startDate).add(Duration(days: index));
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Column(
+                              children: [
+                                selectedIndex == index ? Container(
                                   margin: EdgeInsets.symmetric(horizontal: 20),
                                   padding: EdgeInsets.all(5),
                                   decoration: BoxDecoration(
+                                    color: appWhite,
                                     shape: BoxShape.circle,
                                     border: Border.all(color: appWhite),
                                     //borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                   ),
-                                  child: text((newDate.day).toString()),
+                                  child: text((newDate.day).toString(), textColor: appColorPrimary),
+                                )
+                                    :
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex = index;
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(horizontal: 20),
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: appWhite),
+                                      //borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                    ),
+                                    child: text((newDate.day).toString()),
+                                  ),
                                 ),
+                              ],
+                            ),
+                            index != (widget.numberOfDays - 1) ? SizedBox(
+                              width: deviceWidth * 0.02,
+                              height: deviceHeight * 0.002,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(color: Colors.green),
                               ),
-                            ],
-                          ),
-                          index != (widget.numberOfDays - 1) ? SizedBox(
-                            width: deviceWidth * 0.02,
-                            height: deviceHeight * 0.002,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(color: Colors.green),
+                            ) : Container(),
+                            SizedBox(
+                              width: deviceWidth * 0.005,
                             ),
-                          ) : Container(),
-                          SizedBox(
-                            width: deviceWidth * 0.005,
+                            index != (widget.numberOfDays - 1) ? SizedBox(
+                              width: deviceWidth * 0.02,
+                              height: deviceHeight * 0.002,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(color: Colors.green),
+                              ),
+                            ) : Container(),
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 15),
+                              child: text("Day " + (index + 1).toString())
                           ),
-                          index != (widget.numberOfDays - 1) ? SizedBox(
-                            width: deviceWidth * 0.02,
-                            height: deviceHeight * 0.002,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(color: Colors.green),
-                            ),
-                          ) : Container(),
-                        ],
-                      ),
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 15),
-                          child: text("Day " + (index + 1).toString())
-                      ),
-                    ],
-                  );
-                }
+                        ),
+                      ],
+                    );
+                  }
+              ),
             ),
-          ),
-          SizedBox(height: deviceHeight * 0.05,),
-          Expanded(
-            child: Container(
+            SizedBox(height: deviceHeight * 0.05,),
+            Container(
               margin: EdgeInsets.symmetric(horizontal: 10),
               child: ListView.builder(
-                scrollDirection: Axis.vertical,
+                  scrollDirection: Axis.vertical,
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
                   itemCount: itinerary.isEmpty ? 0 : itinerary[selectedIndex]['places']['Place'].length,
                   itemBuilder: (context, index){
-                  // bool memory = true;
-                  // String img = itinerary[selectedIndex]['places']['Image'][index];
-                  // String new_img = "";
-                  // if(img.startsWith("data:image/jpeg;base64,")){
-                  //   memory = true;
-                  //   new_img = img.substring(23);
-                  // } else {
-                  //   memory = false;
-                  // }
+                  bool memory = true;
+                  String img = itinerary[selectedIndex]['places']['Images'][index];
+                  String new_img = "";
+                  if(img.startsWith("data:image/jpeg;base64,")){
+                    memory = true;
+                    new_img = img.substring(23);
+                  } else {
+                    memory = false;
+                  }
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -228,157 +237,165 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                   border: Border.all(color: appWhite),
                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                 ),
-                                child: Column(
+                                child: Stack(
                                   children: [
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                    Column(
                                       children: [
-                                        // Expanded(
-                                        //   flex: 2,
-                                        //   child: Container(
-                                        //     decoration: BoxDecoration(
-                                        //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                        //       image: memory ? DecorationImage(
-                                        //         fit: BoxFit.cover,
-                                        //         image: MemoryImage(base64Decode(new_img)),
-                                        //       ) : DecorationImage(
-                                        //         fit: BoxFit.cover,
-                                        //         image: NetworkImage(img),
-                                        //       ),
-                                        //     ),
-                                        //     child: Container(
-                                        //       height: deviceHeight * 0.18,
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                              image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: AssetImage("assets/images/Mumbai.jpg"),
-                                              ),
-                                            ),
-                                            child: Container(
-                                              height: deviceHeight * 0.18,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: deviceWidth * 0.03),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                              text(
-                                                itinerary[selectedIndex]['places']['Place'][index],
-                                                maxLine: 2,
-                                                fontSize: textSizeSMedium,
-                                                isBold: true,
-                                              ),
-                                              SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                              Row(
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: [
-                                                  GestureDetector(
-                                                      onTap: () async {
-                                                        final String googleMapslocationUrl = "https://www.google.com/maps/search/?api=1&query=${itinerary[selectedIndex]['places']['Latitude'][index]},${itinerary[selectedIndex]['places']['Longitude'][index]}";
-                                                        final Uri encodedURl = Uri.parse(googleMapslocationUrl);
-                                                        await launchUrl(encodedURl);
-                                                        // if (await canLaunch(encodedURl)) {
-                                                        //   await launch(encodedURl);
-                                                        // } else {
-                                                        //   print('Could not launch $encodedURl');
-                                                        //   throw 'Could not launch $encodedURl';
-                                                        // }
-                                                      },
-                                                      child: Icon(Icons.location_on_outlined)
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              flex: 2,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                                  image: memory ? DecorationImage(
+                                                    fit: BoxFit.cover,
+                                                    image: MemoryImage(base64Decode(new_img)),
+                                                  ) : DecorationImage(
+                                                    fit: BoxFit.cover,
+                                                    image: NetworkImage(img),
                                                   ),
-                                                  SizedBox(width: deviceWidth * 0.05),
-                                                  text("$rupees ${itinerary[selectedIndex]['places']['Avg Cost'][index].toString()}"),
-                                                  SizedBox(width: deviceWidth * 0.05),
-                                                  text(itinerary[selectedIndex]['places']['Rating'][index].toString()),
-                                                  SizedBox(width: deviceWidth * 0.01),
-                                                  Icon(Icons.star, color: Colors.yellow, size: 15.0,),
-                                                  SizedBox(width: deviceWidth * 0.01),
-                                                  // Icon(Icons.remove_red_eye_outlined),
-                                                  // SizedBox(width: deviceWidth * 0.01),
-                                                  // text("45"),
-                                                ],
-                                              ),
-                                              SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                              text(
-                                                itinerary[selectedIndex]['places']['Type'][index],
-                                                maxLine: 2,
-                                                fontSize: textSizeSMedium,
-                                                isBold: true,
-                                              ),
-                                              SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                              GestureDetector(
-                                                onTap: () async {
-                                                  try {
-                                                    final response = await http.post(
-                                                      Uri.parse('http://$ipAddress/restaurants/${widget.destination}'),
-                                                      headers: <String, String>{
-                                                        'accept': 'application/json',
-                                                        'Content-Type': 'application/json',
-                                                      },
-                                                      body: jsonEncode({
-                                                        "latitude": itinerary[selectedIndex]['places']['Latitude'][index],
-                                                        "longitude": itinerary[selectedIndex]['places']['Longitude'][index],
-                                                      }),
-                                                    );
-                                                    var responseData = json.decode(response.body);
-                                                    var result = responseData['result']['data'];
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) {
-                                                          return RestaurantList(
-                                                            restaurantList: result,
-                                                          );
-                                                        },
-                                                      ),
-                                                    );
-                                                  } catch(e) {
-                                                    print(e);
-                                                  }
-                                                },
-                                                child: Row(
-                                                  children: [
-                                                    text("Explore Lunch Options", fontSize: 12.0, maxLine: 1, isCentered: true, textColor: appColorAccent),
-                                                    Expanded(
-                                                      child: Icon(Icons.chevron_right_rounded, color: appColorAccent,),
-                                                    )
-                                                  ],
+                                                ),
+                                                child: Container(
+                                                  height: deviceHeight * 0.15,
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                        )
+                                            ),
+                                            // Expanded(
+                                            //   flex: 2,
+                                            //   child: Container(
+                                            //     decoration: BoxDecoration(
+                                            //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                            //       image: DecorationImage(
+                                            //         fit: BoxFit.cover,
+                                            //         image: AssetImage("assets/images/Mumbai.jpg"),
+                                            //       ),
+                                            //     ),
+                                            //     child: Container(
+                                            //       height: deviceHeight * 0.18,
+                                            //     ),
+                                            //   ),
+                                            // ),
+                                            SizedBox(width: deviceWidth * 0.03),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                  Container(
+                                                    margin: EdgeInsets.only(right: 25),
+                                                    child: text(
+                                                      itinerary[selectedIndex]['places']['Place'][index],
+                                                      maxLine: 2,
+                                                      fontSize: textSizeSMedium,
+                                                      isBold: true,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                  Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: [
+                                                      text("$rupees ${itinerary[selectedIndex]['places']['Avg Cost'][index].toString()}"),
+                                                      SizedBox(width: deviceWidth * 0.05),
+                                                      text(itinerary[selectedIndex]['places']['Rating'][index].toString()),
+                                                      SizedBox(width: deviceWidth * 0.01),
+                                                      Icon(Icons.star, color: Colors.yellow, size: 15.0,),
+                                                      SizedBox(width: deviceWidth * 0.01),
+                                                      // Icon(Icons.remove_red_eye_outlined),
+                                                      // SizedBox(width: deviceWidth * 0.01),
+                                                      // text("45"),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                  text(
+                                                    itinerary[selectedIndex]['places']['Type'][index],
+                                                    maxLine: 2,
+                                                    fontSize: textSizeSMedium,
+                                                    isBold: true,
+                                                  ),
+                                                  SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                  GestureDetector(
+                                                    onTap: () async {
+                                                      try {
+                                                        final response = await http.post(
+                                                          Uri.parse('http://$ipAddress/restaurants/${widget.destination}'),
+                                                          headers: <String, String>{
+                                                            'accept': 'application/json',
+                                                            'Content-Type': 'application/json',
+                                                          },
+                                                          body: jsonEncode({
+                                                            "latitude": itinerary[selectedIndex]['places']['Latitude'][index],
+                                                            "longitude": itinerary[selectedIndex]['places']['Longitude'][index],
+                                                          }),
+                                                        );
+                                                        var responseData = json.decode(response.body);
+                                                        var result = responseData['result']['data'];
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) {
+                                                              return RestaurantList(
+                                                                restaurantList: result,
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      } catch(e) {
+                                                        print(e);
+                                                      }
+                                                    },
+                                                    child: Row(
+                                                      children: [
+                                                        text("Food Options", fontSize: 14.0, maxLine: 1, isCentered: true, textColor: appColorAccent),
+                                                        Icon(Icons.chevron_right_rounded, color: appColorAccent,)
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       ],
                                     ),
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: GestureDetector(
+                                          onTap: () async {
+                                            final String googleMapslocationUrl = "https://www.google.com/maps/search/?api=1&query=${itinerary[selectedIndex]['places']['Latitude'][index]},${itinerary[selectedIndex]['places']['Longitude'][index]}";
+                                            final Uri encodedURl = Uri.parse(googleMapslocationUrl);
+                                            await launchUrl(encodedURl);
+                                            // if (await canLaunch(encodedURl)) {
+                                            //   await launch(encodedURl);
+                                            // } else {
+                                            //   print('Could not launch $encodedURl');
+                                            //   throw 'Could not launch $encodedURl';
+                                            // }
+                                          },
+                                          child: Icon(Icons.directions_outlined)
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
                             )
                           ],
                         ),
-                        SizedBox(height: deviceHeight * 0.01,),
+                        SizedBox(height: deviceHeight * 0.02,),
                       ],
                     );
                   }
               ),
             ),
-          ),
-          SizedBox(height: deviceHeight * 0.02,),
-        ],
+            SizedBox(height: deviceHeight * 0.02,),
+          ],
+        ),
       ),
     );
   }

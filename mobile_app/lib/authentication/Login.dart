@@ -75,7 +75,7 @@ class _LoginState extends State<Login> {
               isLoading = false;
             });
             const snackBar = SnackBar(
-              content: Text('SignIn Failed!\nPlease Check your internet connection and try again'),
+              content: Text('SignIn Failed!\nIncorrect Id or Password'),
               duration: Duration(seconds: 10),
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);

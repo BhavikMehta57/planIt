@@ -342,6 +342,9 @@ class _ItineraryFormState extends State<ItineraryForm> {
                   ),
                   SizedBox(height: deviceHeight * 0.02),
                   EditText(
+                    onTap: () async {
+                      _pickStartDateDialog();
+                    },
                     readOnly: true,
                     controller: startDateController,
                     isPrefixIcon: false,
@@ -364,6 +367,9 @@ class _ItineraryFormState extends State<ItineraryForm> {
                   ),
                   SizedBox(height: deviceHeight * 0.02),
                   EditText(
+                    onTap: () async {
+                      _pickEndDateDialog();
+                    },
                     readOnly: true,
                     controller: endDateController,
                     isPrefixIcon: false,
