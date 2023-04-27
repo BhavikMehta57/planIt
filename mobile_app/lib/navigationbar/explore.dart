@@ -76,7 +76,7 @@ class _ExploreState extends State<Explore> {
           children: <Widget>[
             Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.center,
+                alignment: Alignment.centerLeft,
                 child: text(
                     "Explore Places all over India",
                     maxLine: 2,

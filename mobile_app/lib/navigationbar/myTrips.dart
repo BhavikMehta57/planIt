@@ -107,7 +107,7 @@ class _MyTripsState extends State<MyTrips> {
         children: <Widget>[
           Container(
               margin: EdgeInsets.symmetric(horizontal: 20),
-              alignment: Alignment.center,
+              alignment: Alignment.centerLeft,
               child: text(
                   "View your saved trips here",
                   maxLine: 2,
