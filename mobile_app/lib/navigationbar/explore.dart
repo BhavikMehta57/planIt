@@ -24,17 +24,37 @@ class Explore extends StatefulWidget {
   _ExploreState createState() => _ExploreState();
 }
 
-class _ExploreState extends State<Explore> {
+class _ExploreState extends State<Explore> with SingleTickerProviderStateMixin {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List allPlacesList = [];
   List filteredPlacesList = [];
   String? searchPlace = "";
   String? sort = "";
+  late TabController filterTabController;
+  Map<String, bool> cityFilterList = {
+    'Mumbai': false,
+    'Delhi': false,
+    'Chennai': false,
+    'Hyderabad': false,
+  };
+  Map<String, bool> typeFilterList = {
+    "Religious": false,
+    "Heritage": false,
+    "Entertainment": false,
+    "Leisure": false,
+    "Beaches": false,
+    "Shopping": false,
+    "Food": false,
+    "Nature & Wildlife": false,
+    "Art & Museum": false,
+    "Malls": false,
+  };
 
   @override
   void initState() {
     super.initState();
+    filterTabController = TabController(length: 2, vsync: this);
     getPlaces();
   }
 
@@ -45,16 +65,68 @@ class _ExploreState extends State<Explore> {
     setState(() {
       allPlacesList = responseData['result']['data'];
       filteredPlacesList = List.from(allPlacesList);
-      print(allPlacesList);
     });
   }
 
+  Future<void> sortPlaces() async {
+    List tempPlaceList = List.from(allPlacesList);
+    if (sort == "bestMatch") {} else if (sort == "priceAscending") {
+      tempPlaceList.sort((a, b) => double.parse(a[12].toString().replaceAll(",", "")).compareTo(double.parse(b[12].toString().replaceAll(",", ""))));
+    } else if (sort == "priceDescending") {
+      tempPlaceList.sort((a, b) => double.parse(b[12].toString().replaceAll(",", "")).compareTo(double.parse(a[12].toString().replaceAll(",", ""))));
+    } else if (sort == "ratingAscending") {
+      tempPlaceList.sort((a, b) => double.parse(a[6].toString()).compareTo(double.parse(b[6].toString())));
+    } else if (sort == "ratingDescending") {
+      tempPlaceList.sort((a, b) => double.parse(b[6].toString()).compareTo(double.parse(a[6].toString())));
+    } else {}
+    setState((){
+      filteredPlacesList = List.from(tempPlaceList);
+    });
+  }
+
+  Future<void> sortFilteredPlaces() async {
+    List tempPlaceList = List.from(filteredPlacesList);
+    if (sort == "bestMatch") {} else if (sort == "priceAscending") {
+      tempPlaceList.sort((a, b) => double.parse(a[12].toString().replaceAll(",", "")).compareTo(double.parse(b[12].toString().replaceAll(",", ""))));
+    } else if (sort == "priceDescending") {
+      tempPlaceList.sort((a, b) => double.parse(b[12].toString().replaceAll(",", "")).compareTo(double.parse(a[12].toString().replaceAll(",", ""))));
+    } else if (sort == "ratingAscending") {
+      tempPlaceList.sort((a, b) => double.parse(a[6].toString()).compareTo(double.parse(b[6].toString())));
+    } else if (sort == "ratingDescending") {
+      tempPlaceList.sort((a, b) => double.parse(b[6].toString()).compareTo(double.parse(a[6].toString())));
+    } else {}
+    setState((){
+      filteredPlacesList = List.from(tempPlaceList);
+    });
+  }
+  
   Future<void> filterPlaces(String searchValue) async {
     List tempPlacesList = List.from(allPlacesList);
     tempPlacesList.retainWhere((element) => element[0].toString().toLowerCase().contains(searchValue.toLowerCase()));
     setState(() {
       filteredPlacesList = List.from(tempPlacesList);
     });
+  }
+
+  Future<void> applyFilterPlaces() async {
+    List tempPlacesList = List.from(allPlacesList);
+
+    if (cityFilterList.containsValue(true)) {
+      Map<String, bool> tempCityFilterList = Map.from(cityFilterList);
+      tempCityFilterList.removeWhere((key, value) => (value == false));
+      tempPlacesList.retainWhere((element) => tempCityFilterList.keys.toList().contains(element[1]));
+    }
+
+    if (typeFilterList.containsValue(true)) {
+      Map<String, bool> tempTypeFilterList = Map.from(typeFilterList);
+      tempTypeFilterList.removeWhere((key, value) => (value == false));
+      tempPlacesList.retainWhere((element) => tempTypeFilterList.keys.toList().contains(element[10]));
+    }
+
+    setState(() {
+      filteredPlacesList = List.from(tempPlacesList);
+    });
+
   }
   
   @override
@@ -124,58 +196,140 @@ class _ExploreState extends State<Explore> {
                               color: appColorPrimary,
                               child: Column(
                                 children: [
-                                  text("Sort By", fontSize: textSizeLarge),
-                                  ListTile(
-                                    title: text("Best Match"),
-                                    trailing: Radio(value: "bestMatch", groupValue: sort, onChanged: (value) async {
-                                      setState(() {
-                                        sort = value.toString();
-                                      });
-                                    }),
+                                  TabBar(
+                                      padding: EdgeInsets.symmetric(horizontal: 10),
+                                      isScrollable: true,
+                                      physics: BouncingScrollPhysics(),
+                                      controller: filterTabController,
+                                      tabs: [
+                                        Tab(child: text('Filter'),),
+                                        Tab(child: text('Sort'),),
+                                      ]
                                   ),
-                                  ListTile(
-                                    title: text("Price: Low to High"),
-                                    trailing: Radio(value: "priceAscending", groupValue: sort, onChanged: (value) async {
-                                      setState(() {
-                                        sort = value.toString();
-                                      });
-                                    }),
+                                  Expanded(
+                                    child: TabBarView(
+                                        controller: filterTabController,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Expanded(
+                                                child: SingleChildScrollView(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      text("Select City"),
+                                                      Wrap(
+                                                        spacing: 5.0,
+                                                        runSpacing: 5.0,
+                                                        children: cityFilterList.keys.toList().map((String choice) {
+                                                          return Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              CustomCheckbox(
+                                                                isChecked: cityFilterList[choice],
+                                                                onChange: (bool? val) {
+                                                                  setState((){
+                                                                    cityFilterList[choice] = val!;
+                                                                  });
+                                                                },
+                                                              ),
+                                                              text(choice,),
+                                                            ],
+                                                          );
+                                                        }).toList(),
+                                                      ),
+                                                      text("Select Types"),
+                                                      Wrap(
+                                                        spacing: 5.0,
+                                                        runSpacing: 5.0,
+                                                        children: typeFilterList.keys.toList().map((String choice) {
+                                                          return Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              CustomCheckbox(
+                                                                isChecked: typeFilterList[choice],
+                                                                onChange: (bool? val) {
+                                                                  setState((){
+                                                                    typeFilterList[choice] = val!;
+                                                                  });
+                                                                },
+                                                              ),
+                                                              text(choice,),
+                                                            ],
+                                                          );
+                                                        }).toList(),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                                                child: filterButton("Filter", () async {
+                                                  applyFilterPlaces();
+                                                  Navigator.pop(context);
+                                                }, appWhite, deviceHeight),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            children: [
+                                              ListTile(
+                                                title: text("Best Match"),
+                                                trailing: Radio(value: "bestMatch", groupValue: sort, onChanged: (value) async {
+                                                  setState(() {
+                                                    sort = value.toString();
+                                                  });
+                                                }),
+                                              ),
+                                              ListTile(
+                                                title: text("Price: Low to High"),
+                                                trailing: Radio(value: "priceAscending", groupValue: sort, onChanged: (value) async {
+                                                  setState(() {
+                                                    sort = value.toString();
+                                                  });
+                                                }),
+                                              ),
+                                              ListTile(
+                                                title: text("Price: High to Low"),
+                                                trailing: Radio(value: "priceDescending", groupValue: sort, onChanged: (value) async {
+                                                  setState(() {
+                                                    sort = value.toString();
+                                                  });
+                                                }),
+                                              ),
+                                              ListTile(
+                                                title: text("Rating: Best to Worst"),
+                                                trailing: Radio(value: "ratingDescending", groupValue: sort, onChanged: (value) async {
+                                                  setState(() {
+                                                    sort = value.toString();
+                                                  });
+                                                }),
+                                              ),
+                                              ListTile(
+                                                title: text("Rating: Worst to Best"),
+                                                trailing: Radio(value: "ratingAscending", groupValue: sort, onChanged: (value) async {
+                                                  setState(() {
+                                                    sort = value.toString();
+                                                  });
+                                                }),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+                                                child: filterButton("Sort", () async {
+                                                  if (searchPlace == "") {
+                                                    await sortPlaces();
+                                                  } else {
+                                                    await sortFilteredPlaces();
+                                                  }
+                                                  Navigator.pop(context);
+                                                }, appWhite, deviceHeight),
+                                              )
+                                            ],
+                                          )
+                                        ]
+                                    ),
                                   ),
-                                  ListTile(
-                                    title: text("Price: High to Low"),
-                                    trailing: Radio(value: "priceDescending", groupValue: sort, onChanged: (value) async {
-                                      setState(() {
-                                        sort = value.toString();
-                                      });
-                                    }),
-                                  ),
-                                  ListTile(
-                                    title: text("Rating: Best to Worst"),
-                                    trailing: Radio(value: "ratingDescending", groupValue: sort, onChanged: (value) async {
-                                      setState(() {
-                                        sort = value.toString();
-                                      });
-                                    }),
-                                  ),
-                                  ListTile(
-                                    title: text("Rating: Worst to Best"),
-                                    trailing: Radio(value: "ratingAscending", groupValue: sort, onChanged: (value) async {
-                                      setState(() {
-                                        sort = value.toString();
-                                      });
-                                    }),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
-                                    child: filterButton("Sort", () async {
-                                      // if (searchPlace == "") {
-                                      //   await sortPlaces();
-                                      // } else {
-                                      //   await sortFilteredPlaces();
-                                      // }
-                                      Navigator.pop(context);
-                                    }, appWhite, deviceHeight),
-                                  )
                                 ],
                               ),
                             );

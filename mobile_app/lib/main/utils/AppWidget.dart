@@ -437,3 +437,42 @@ class _CatagoryState extends State<Catagory> {
     );
   }
 }
+
+class CustomCheckbox extends StatefulWidget {
+  void Function(bool?)? onChange;
+  bool? isChecked;
+
+  CustomCheckbox({required this.isChecked, required this.onChange});
+
+  @override
+  _CustomCheckboxState createState() => _CustomCheckboxState();
+}
+
+class _CustomCheckboxState extends State<CustomCheckbox> {
+  bool _isSelected = false;
+
+  @override
+  void initState() {
+    _isSelected = widget.isChecked ?? false;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+      scale: 1.5,
+      child: Checkbox(
+        checkColor: appColorPrimary,
+        side: MaterialStateBorderSide.resolveWith(
+              (states) => BorderSide(width: 1.0, color: widget.isChecked! ? appColorPrimary : appWhite),
+        ),
+        activeColor: appWhite,
+        value: widget.isChecked,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.0))
+        ),
+        onChanged: widget.onChange,
+      ),
+    );
+  }
+}
