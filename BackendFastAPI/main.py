@@ -45,7 +45,7 @@ async def root():
 @app.get("/places")
 async def getPlaces():
     places = []
-    data = pd.read_csv('Dataset Attributes - All3.csv')
+    data = pd.read_csv('Dataset Attributes - All4.csv')
     data = data.fillna('')
     places = data.values.tolist()
     return {
@@ -141,7 +141,7 @@ async def getItinerary(info: Info):
     hotel_long = float(info.hotelLongitude)
     hotel_name = info.hotelName
 
-    data = pd.read_csv('Dataset Attributes - All3.csv')
+    data = pd.read_csv('Dataset Attributes - All4.csv')
 
     data = data.loc[data['City'] == destination] 
     data = data.loc[data['Type'].isin(current)]
@@ -189,7 +189,8 @@ async def getItinerary(info: Info):
 
     global day
     day = 0
-    
+    tripCost = 0
+
     for i in range(0,days):
 
         places = [hotel_name]
@@ -292,18 +293,20 @@ async def getItinerary(info: Info):
         start_time = 9.50
         global current_time
         current_time = start_time
-        current_time = start_time
+
         for i in iti_day["Open Time"]:
-            time = datetime.datetime.strptime(i, time_format)
+            time = datetime.datetime.strptime(str(i), time_format)
             decimal_hours = time.hour + time.minute/60
             openingtimes.append(decimal_hours)
 
         for i in iti_day["Close Time"]:
-            time = datetime.datetime.strptime(i, time_format)
+            time = datetime.datetime.strptime(str(i), time_format)
             decimal_hours = time.hour + time.minute/60
             closingtimes.append(decimal_hours)
+
         for i in iti_day["Avg time spent"]:
-            avgtimes.append(i)
+            avgtimes.append(float(i))
+
         for i in iti_day["Rating"]:
             ratings.append(i)
 
@@ -345,7 +348,6 @@ async def getItinerary(info: Info):
                     best_path.extend(list(i))
                     best_path.append(s)
 
-            print("Initial Path accoridng to TSP = ",best_path)
             for i in best_path:
                 final_list.append(iti_day['Place'][i])
 
@@ -362,8 +364,6 @@ async def getItinerary(info: Info):
             fwd = []
             bwd = []
 
-            print("============================= \n Forward Path")
-            print(best_path)
             for i in range(1,len(best_path)):
 
                 j = i-1
@@ -383,8 +383,6 @@ async def getItinerary(info: Info):
                 avg_fwd_rating += ratings[best_path[i]]
             best_path.reverse()
 
-            print("********************************* \n Backward Path")
-            print(best_path)
             current_time = 9.50
             for i in range(1,len(best_path)):
 
@@ -402,14 +400,11 @@ async def getItinerary(info: Info):
             avg_bwd_rating = 0
             for i in range(1,len(bwd)):
                     avg_bwd_rating += ratings[best_path[i]]
-            print("Forward List: ", fwd,currenttimefwdlist,leavingtimefwdlist)
-            print("Backward List: ",bwd,currenttimebwdlist,leavingtimebwdlist)
 
             ctl=[]
             ltl=[]
 
             if(currenttimebwd > currenttimefwd):
-                # print("Entered currenttimebwd > currenttimefwd")
                 ctl = currenttimefwdlist
                 ltl = leavingtimefwdlist
                 final, unmatch, ctl, ltl = addExtra(best_path,fwd,ctl,ltl)
@@ -432,7 +427,6 @@ async def getItinerary(info: Info):
             if 0 in final:
                 final.remove(0)
             len_final = len(final)
-            print("LENGTH OF FINAL PATH", len_final)
             return final,ctl[:len_final],ltl[:len_final],unmatch
 
         def addExtra(best_path,place_list, ctl, ltl):
@@ -443,8 +437,6 @@ async def getItinerary(info: Info):
                 unmatch.remove(0)
             unmatch = list(unmatch)
             unmatch2 = list(unmatch)
-            print("----------------------------------------")
-            print("Unmatched List Places are = ",unmatch)
             l=len(place_list)
             for i in range(len(unmatch)):
                 j=i+1
@@ -472,10 +464,15 @@ async def getItinerary(info: Info):
         iti_day['Leaving Time'] = final_ltl
         print(iti_day)
         print(extra_places)
+        dayCost = 0
+        for cost in iti_day['Avg Cost']: 
+            dayCost = dayCost + float(cost)
+        tripCost = tripCost + dayCost
         print("-=-=-=-=-=-=-=-=-=-=-=-=-=DAY OVER=-=-=-=-=-=-=-=-=-=-=-")
         itinerary.append({
                 "date": newDate.strftime("%Y-%m-%d"),
                 "day": day,
+                "dayCost": dayCost,
                 "places": iti_day.to_dict('list'),
                 "extra": extra_places.to_dict('list')
             })
@@ -490,6 +487,7 @@ async def getItinerary(info: Info):
         "Number of travellers": numberOfTravellers,
         "Number of Days": days,
         "Start Date": startDate,
+        "Trip Cost": tripCost
     })
 
     return {

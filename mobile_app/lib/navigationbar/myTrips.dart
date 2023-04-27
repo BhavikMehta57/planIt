@@ -118,7 +118,7 @@ class _MyTripsState extends State<MyTrips> {
           SizedBox(height: deviceHeight * 0.02,),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20),
-            child: text("YOUR RECENT TRIPS(2)",
+            child: text("YOUR RECENT TRIPS",
               textColor: appWhite,
               fontSize: 18.0,
               fontFamily: fontBold,
@@ -166,15 +166,12 @@ class _MyTripsState extends State<MyTrips> {
                           child: Column(
                               children: const [
                                 Text(
-                                  'No Information Available',
+                                  'No Itineraries Found',
                                   style: TextStyle(
                                       color: appWhite,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 25),
                                 ),
-                                Center(
-                                  child: CircularProgressIndicator(color: appWhite,),
-                                )
                               ]
                           )
                       );
@@ -261,7 +258,7 @@ class _MyTripsState extends State<MyTrips> {
                                               ],
                                             ),
                                             SizedBox(height: deviceHeight * 0.02,),
-                                            text("$rupees 10000"),
+                                            text("$rupees ${(snapshot.data!.docs[index]["Number of Days"] * snapshot.data!.docs[index]["Trip Cost"]).toInt()}"),
                                           ],
                                         ),
                                       )

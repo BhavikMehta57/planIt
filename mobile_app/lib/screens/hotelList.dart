@@ -181,7 +181,7 @@ class _HotelListState extends State<HotelList> {
             );
             var responseData = json.decode(response.body);
             var result = responseData['result']['data'];
-            Navigator.push(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
                 builder: (context) {
@@ -193,7 +193,7 @@ class _HotelListState extends State<HotelList> {
                   );
                 },
               ),
-            );
+                    (Route<dynamic> route) => false);
             setState(() {
               isPlanning = false;
             });
@@ -352,20 +352,6 @@ class _HotelListState extends State<HotelList> {
                           selected = index;
                         });
                         print(filteredhotelsList[selected!]['Name']);
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) {
-                        //       return ItineraryPage(
-                        //         itineraryID: filteredhotelsList[index]["ItineraryID"],
-                        //         destination: filteredhotelsList[index]["Destination"],
-                        //         itinerary: filteredhotelsList[index]["Itinerary"],
-                        //         startDate: filteredhotelsList[index]["Start Date"],
-                        //         numberOfDays: filteredhotelsList[index]["Number of Days"],
-                        //       );
-                        //     },
-                        //   ),
-                        // );
                       },
                       child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 20),

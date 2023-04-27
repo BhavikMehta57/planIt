@@ -200,8 +200,8 @@ class _ItineraryFormState extends State<ItineraryForm> {
         );
       },
       context: context,
-      initialDate: DateTime.parse(selectedStartDate).add(Duration(days: 0)),
-      firstDate: DateTime.parse(selectedStartDate).add(Duration(days: 0)),
+      initialDate: DateTime.parse(selectedStartDate).add(Duration(days: 1)),
+      firstDate: DateTime.parse(selectedStartDate).add(Duration(days: 1)),
       lastDate: DateTime(2099,12,31),
       helpText: "Select Start Date",
       fieldLabelText: "Enter Start Date",
@@ -490,8 +490,6 @@ class _ItineraryFormState extends State<ItineraryForm> {
                                       setState(() {
                                         areasOfInterests[key] = value!;
                                         value ? areasOfInterest.add(key) : areasOfInterest.remove(key);
-                                        print(areasOfInterests);
-                                        print(areasOfInterest);
                                       });
                                     },
                                   ),
@@ -583,7 +581,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
                       setState((){
                         isPlanning = true;
                       });
-                      if(_formKey.currentState!.validate() && DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays >= 0){
+                      if(_formKey.currentState!.validate() && DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays > 0){
                         int diff = DateTime.parse(selectedEndDate).difference(DateTime.parse(selectedStartDate)).inDays + 1;
                         String docId = nanoid(8);
                         try {

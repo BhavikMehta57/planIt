@@ -22,6 +22,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:planit/screens/cityItinerary.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:mailer/mailer.dart';
@@ -133,75 +134,103 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Container(
-                        width: deviceWidth * 0.4,
-                        height: deviceHeight * 0.2,
-                        decoration: BoxDecoration(
-                          // border: Border.all(color: appWhite),
-                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage("assets/images/Delhi NCR.jpg"),
-                            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                          ),
-                        ),
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return CityItinerary(
+                                  city: "Delhi",
+                                );
+                              },
+                            ),
+                          );
+                        },
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              text(
-                                  "DELHI",
-                                  maxLine: 2
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Transform.rotate(
-                                    angle: 90 * pi / 180,
-                                    child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
-                                  )
-                                ],
-                              )
-                            ],
+                          width: deviceWidth * 0.4,
+                          height: deviceHeight * 0.2,
+                          decoration: BoxDecoration(
+                            // border: Border.all(color: appWhite),
+                            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/Delhi.jpg"),
+                              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                            ),
+                          ),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                text(
+                                    "DELHI",
+                                    maxLine: 2
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Transform.rotate(
+                                      angle: 90 * pi / 180,
+                                      child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      Container(
-                        width: deviceWidth * 0.4,
-                        height: deviceHeight * 0.2,
-                        decoration: BoxDecoration(
-                          // border: Border.all(color: appWhite),
-                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage("assets/images/Hyderabad.jpg"),
-                            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                          ),
-                        ),
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return CityItinerary(
+                                  city: "Hyderabad",
+                                );
+                              },
+                            ),
+                          );
+                        },
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              text(
-                                  "HYDERABAD",
-                                  maxLine: 2
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Transform.rotate(
-                                    angle: 90 * pi / 180,
-                                    child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
-                                  )
-                                ],
-                              )
-                            ],
+                          width: deviceWidth * 0.4,
+                          height: deviceHeight * 0.2,
+                          decoration: BoxDecoration(
+                            // border: Border.all(color: appWhite),
+                            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/Hyderabad.jpg"),
+                              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                            ),
+                          ),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                text(
+                                    "HYDERABAD",
+                                    maxLine: 2
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Transform.rotate(
+                                      angle: 90 * pi / 180,
+                                      child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -214,75 +243,103 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Container(
-                        width: deviceWidth * 0.4,
-                        height: deviceHeight * 0.2,
-                        decoration: BoxDecoration(
-                          // border: Border.all(color: appWhite),
-                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage("assets/images/Mumbai.jpg"),
-                            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                          ),
-                        ),
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return CityItinerary(
+                                  city: "Mumbai",
+                                );
+                              },
+                            ),
+                          );
+                        },
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              text(
-                                  "MUMBAI",
-                                  maxLine: 2
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Transform.rotate(
-                                    angle: 90 * pi / 180,
-                                    child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
-                                  )
-                                ],
-                              )
-                            ],
+                          width: deviceWidth * 0.4,
+                          height: deviceHeight * 0.2,
+                          decoration: BoxDecoration(
+                            // border: Border.all(color: appWhite),
+                            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/Mumbai.jpg"),
+                              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                            ),
+                          ),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                text(
+                                    "MUMBAI",
+                                    maxLine: 2
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Transform.rotate(
+                                      angle: 90 * pi / 180,
+                                      child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      Container(
-                        width: deviceWidth * 0.4,
-                        height: deviceHeight * 0.2,
-                        decoration: BoxDecoration(
-                          // border: Border.all(color: appWhite),
-                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage("assets/images/Chennai.jpg"),
-                            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                          ),
-                        ),
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return CityItinerary(
+                                  city: "Chennai",
+                                );
+                              },
+                            ),
+                          );
+                        },
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              text(
-                                  "CHENNAI",
-                                  maxLine: 2
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Transform.rotate(
-                                    angle: 90 * pi / 180,
-                                    child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
-                                  )
-                                ],
-                              )
-                            ],
+                          width: deviceWidth * 0.4,
+                          height: deviceHeight * 0.2,
+                          decoration: BoxDecoration(
+                            // border: Border.all(color: appWhite),
+                            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/Chennai.jpg"),
+                              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                            ),
+                          ),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                text(
+                                    "CHENNAI",
+                                    maxLine: 2
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Transform.rotate(
+                                      angle: 90 * pi / 180,
+                                      child: Icon(Icons.arrow_circle_up_rounded, size: deviceWidth * 0.1,),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
