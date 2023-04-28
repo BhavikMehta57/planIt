@@ -206,6 +206,7 @@ class _CityItineraryState extends State<CityItinerary> {
                             ),
                           ),
                         ),
+                        SizedBox(height: deviceHeight * 0.02,)
                       ],
                     );
                   },
