@@ -67,6 +67,7 @@ dependencies:
   firebase_messaging: ^11.2.7
   carousel_slider: ^4.1.1
   dropdown_button2: ^1.4.0
+  video_player:
 
 dev_dependencies:
   flutter_test:
@@ -102,13 +103,15 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/
-    - assets/images/MainHomeImage.png
-    - assets/images/Chennai.jpg
-    - assets/images/Delhi.jpg
-    - assets/images/Hyderabad.jpg
-    - assets/images/Mumbai.jpg
-    - assets/images/logo.png
-    - assets/images/nameLogo.png
+    - assets/images/walkthrough/
+#    - assets/images/MainHomeImage.png
+#    - assets/images/Chennai.jpg
+#    - assets/images/Delhi.jpg
+#    - assets/images/Hyderabad.jpg
+#    - assets/images/Mumbai.jpg
+#    - assets/images/logo.png
+#    - assets/images/nameLogo.png
+    - assets/videos/
 #    - assets/images/planit.jpeg
 #    - assets/images/jobsIcon.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see

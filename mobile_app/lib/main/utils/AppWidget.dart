@@ -44,7 +44,7 @@ Widget text(
       height: 1.5,
       letterSpacing: latterSpacing,
       decoration:
-          lineThrough ? TextDecoration.lineThrough : TextDecoration.none,
+          lineThrough ? TextDecoration.underline : TextDecoration.none,
     ),
   );
 }

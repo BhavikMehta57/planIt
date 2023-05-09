@@ -51,6 +51,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
   bool editState = false;
   int selectedPlace = 0;
   int selectedExtraPlace = 0;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -92,11 +93,17 @@ class _ItineraryPageState extends State<ItineraryPage> {
   }
 
   Future<void> getItinerary(String itineraryID) async {
+    setState(() {
+      isLoading = true;
+    });
     await FirebaseFirestore.instance.collection("itineraries").doc(itineraryID).get().then((value) {
       setState(() {
         itinerary = value.data()!['Itinerary'];
         print(itinerary);
       });
+    });
+    setState(() {
+      isLoading = false;
     });
   }
 
@@ -137,6 +144,14 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                     shrinkWrap: true,
                                     itemCount: itinerary.isEmpty ? 0 : itinerary[selectedIndex]['extra']['Place'].length,
                                     itemBuilder: (context, index){
+                                      bool show = true;
+                                      double open_time = double.parse(itinerary[selectedIndex]['extra']['Open Time'][index].toString().split(":")[0]) + (double.parse(itinerary[selectedIndex]['extra']['Open Time'][index].toString().split(":")[1]) / 60);
+                                      double close_time = double.parse(itinerary[selectedIndex]['extra']['Close Time'][index].toString().split(":")[0]) + (double.parse(itinerary[selectedIndex]['extra']['Close Time'][index].toString().split(":")[1]) / 60);
+                                      if (double.parse(itinerary[selectedIndex]['places']['Arrival Time'][selectedPlace]) > open_time && double.parse(itinerary[selectedIndex]['places']['Arrival Time'][selectedPlace]) < close_time) {
+                                        show = true;
+                                      } else {
+                                        show = false;
+                                      }
                                       bool memory = true;
                                       String img = itinerary[selectedIndex]['extra']['Images'][index];
                                       String new_img = "";
@@ -146,7 +161,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                       } else {
                                         memory = false;
                                       }
-                                      return Column(
+                                      return show ? Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
@@ -310,7 +325,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                           ),
                                           SizedBox(height: deviceHeight * 0.02,),
                                         ],
-                                      );
+                                      ) : Container();
                                     }
                                 ),
                                 Container(
@@ -387,7 +402,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
           SizedBox(width: 10.0,),
         ],
       ),
-      body: WillPopScope(
+      body: isLoading ? Center(child: CircularProgressIndicator(color: appWhite,),) : WillPopScope(
         onWillPop: () async {
           if (editState) {
             return false;
@@ -546,143 +561,182 @@ class _ItineraryPageState extends State<ItineraryPage> {
                               ),
                               Expanded(
                                 flex: 8,
-                                child: Container(
-                                  // height: deviceHeight * 0.18,
-                                  margin: EdgeInsets.symmetric(horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: appWhite),
-                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Expanded(
-                                                flex: 2,
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                                    image: memory ? DecorationImage(
-                                                      fit: BoxFit.cover,
-                                                      image: MemoryImage(base64Decode(new_img)),
-                                                    ) : DecorationImage(
-                                                      fit: BoxFit.cover,
-                                                      image: NetworkImage(img),
+                                child: GestureDetector(
+                                  onLongPress: () async {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                        ),
+                                        backgroundColor: appWhite,
+                                        builder: (context) {
+                                          return Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              color: appWhite
+                                            ),
+                                            width: deviceWidth,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ListTile(
+                                                  horizontalTitleGap: 0.0,
+                                                  leading: const Icon(Icons.bookmark_added_outlined, color: appColorPrimary,),
+                                                  title: text('Bookmark', fontSize: 20.0, textColor: appColorPrimary),
+                                                  onTap: () {},
+                                                ),
+                                                ListTile(
+                                                  horizontalTitleGap: 0.0,
+                                                  leading: const Icon(Icons.reviews_outlined, color: appColorPrimary,),
+                                                  title: text('Review', fontSize: 20.0, textColor: appColorPrimary),
+                                                  onTap: () async {
+
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                    });
+                                  },
+                                  child: Container(
+                                    // height: deviceHeight * 0.18,
+                                    margin: EdgeInsets.symmetric(horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: appWhite),
+                                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                                      image: memory ? DecorationImage(
+                                                        fit: BoxFit.cover,
+                                                        image: MemoryImage(base64Decode(new_img)),
+                                                      ) : DecorationImage(
+                                                        fit: BoxFit.cover,
+                                                        image: NetworkImage(img),
+                                                      ),
+                                                    ),
+                                                    child: Container(
+                                                      height: deviceHeight * 0.15,
                                                     ),
                                                   ),
-                                                  child: Container(
-                                                    height: deviceHeight * 0.15,
-                                                  ),
                                                 ),
-                                              ),
-                                              SizedBox(width: deviceWidth * 0.03),
-                                              Expanded(
-                                                flex: 3,
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                                    Container(
-                                                      margin: EdgeInsets.only(right: 25),
-                                                      child: text(
-                                                        itinerary[selectedIndex]['places']['Place'][index],
+                                                SizedBox(width: deviceWidth * 0.03),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                      Container(
+                                                        margin: EdgeInsets.only(right: 25),
+                                                        child: text(
+                                                          itinerary[selectedIndex]['places']['Place'][index],
+                                                          maxLine: 2,
+                                                          fontSize: textSizeSMedium,
+                                                          isBold: true,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                      Row(
+                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        children: [
+                                                          itinerary[selectedIndex]['places']['Avg Cost'][index].toString() == "0.0" ? text("Free") : text("$rupees ${itinerary[selectedIndex]['places']['Avg Cost'][index].toString()}"),
+                                                          SizedBox(width: deviceWidth * 0.05),
+                                                          text(itinerary[selectedIndex]['places']['Rating'][index].toString()),
+                                                          SizedBox(width: deviceWidth * 0.01),
+                                                          Icon(Icons.star, color: Colors.yellow, size: 15.0,),
+                                                          SizedBox(width: deviceWidth * 0.01),
+                                                          // Icon(Icons.remove_red_eye_outlined),
+                                                          // SizedBox(width: deviceWidth * 0.01),
+                                                          // text("45"),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                      text(
+                                                        itinerary[selectedIndex]['places']['Type'][index],
                                                         maxLine: 2,
                                                         fontSize: textSizeSMedium,
                                                         isBold: true,
                                                       ),
-                                                    ),
-                                                    SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                                    Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      children: [
-                                                        itinerary[selectedIndex]['places']['Avg Cost'][index].toString() == "0.0" ? text("Free") : text("$rupees ${itinerary[selectedIndex]['places']['Avg Cost'][index].toString()}"),
-                                                        SizedBox(width: deviceWidth * 0.05),
-                                                        text(itinerary[selectedIndex]['places']['Rating'][index].toString()),
-                                                        SizedBox(width: deviceWidth * 0.01),
-                                                        Icon(Icons.star, color: Colors.yellow, size: 15.0,),
-                                                        SizedBox(width: deviceWidth * 0.01),
-                                                        // Icon(Icons.remove_red_eye_outlined),
-                                                        // SizedBox(width: deviceWidth * 0.01),
-                                                        // text("45"),
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                                    text(
-                                                      itinerary[selectedIndex]['places']['Type'][index],
-                                                      maxLine: 2,
-                                                      fontSize: textSizeSMedium,
-                                                      isBold: true,
-                                                    ),
-                                                    SizedBox(height: deviceHeight * 0.15 * 0.02,),
-                                                    GestureDetector(
-                                                      onTap: () async {
-                                                        try {
-                                                          final response = await http.post(
-                                                            Uri.parse('http://$ipAddress/restaurants/${widget.destination}'),
-                                                            headers: <String, String>{
-                                                              'accept': 'application/json',
-                                                              'Content-Type': 'application/json',
-                                                            },
-                                                            body: jsonEncode({
-                                                              "latitude": itinerary[selectedIndex]['places']['Latitude'][index],
-                                                              "longitude": itinerary[selectedIndex]['places']['Longitude'][index],
-                                                            }),
-                                                          );
-                                                          var responseData = json.decode(response.body);
-                                                          var result = responseData['result']['data'];
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) {
-                                                                return RestaurantList(
-                                                                  restaurantList: result,
-                                                                );
+                                                      SizedBox(height: deviceHeight * 0.15 * 0.02,),
+                                                      GestureDetector(
+                                                        onTap: () async {
+                                                          try {
+                                                            final response = await http.post(
+                                                              Uri.parse('http://$ipAddress/restaurants/${widget.destination}'),
+                                                              headers: <String, String>{
+                                                                'accept': 'application/json',
+                                                                'Content-Type': 'application/json',
                                                               },
-                                                            ),
-                                                          );
-                                                        } catch(e) {
-                                                          print(e);
-                                                        }
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          text("Food Options", fontSize: 14.0, maxLine: 1, isCentered: true, textColor: appColorAccent),
-                                                          Icon(Icons.chevron_right_rounded, color: appColorAccent,)
-                                                        ],
+                                                              body: jsonEncode({
+                                                                "latitude": itinerary[selectedIndex]['places']['Latitude'][index],
+                                                                "longitude": itinerary[selectedIndex]['places']['Longitude'][index],
+                                                              }),
+                                                            );
+                                                            var responseData = json.decode(response.body);
+                                                            var result = responseData['result']['data'];
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (context) {
+                                                                  return RestaurantList(
+                                                                    restaurantList: result,
+                                                                  );
+                                                                },
+                                                              ),
+                                                            );
+                                                          } catch(e) {
+                                                            print(e);
+                                                          }
+                                                        },
+                                                        child: Row(
+                                                          children: [
+                                                            text("Food Options", fontSize: 14.0, maxLine: 1, isCentered: true, textColor: appColorAccent),
+                                                            Icon(Icons.chevron_right_rounded, color: appColorAccent,)
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Positioned(
-                                        right: 2,
-                                        top: 2,
-                                        child: GestureDetector(
-                                            onTap: () async {
-                                              final String googleMapslocationUrl = "https://www.google.com/maps/search/?api=1&query=${itinerary[selectedIndex]['places']['Latitude'][index]},${itinerary[selectedIndex]['places']['Longitude'][index]}";
-                                              final Uri encodedURl = Uri.parse(googleMapslocationUrl);
-                                              await launchUrl(encodedURl);
-                                              // if (await canLaunch(encodedURl)) {
-                                              //   await launch(encodedURl);
-                                              // } else {
-                                              //   print('Could not launch $encodedURl');
-                                              //   throw 'Could not launch $encodedURl';
-                                              // }
-                                            },
-                                            child: Icon(Icons.directions_outlined)
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      )
-                                    ],
+                                        Positioned(
+                                          right: 2,
+                                          top: 2,
+                                          child: GestureDetector(
+                                              onTap: () async {
+                                                final String googleMapslocationUrl = "https://www.google.com/maps/search/?api=1&query=${itinerary[selectedIndex]['places']['Latitude'][index]},${itinerary[selectedIndex]['places']['Longitude'][index]}";
+                                                final Uri encodedURl = Uri.parse(googleMapslocationUrl);
+                                                await launchUrl(encodedURl);
+                                                // if (await canLaunch(encodedURl)) {
+                                                //   await launch(encodedURl);
+                                                // } else {
+                                                //   print('Could not launch $encodedURl');
+                                                //   throw 'Could not launch $encodedURl';
+                                                // }
+                                              },
+                                              child: Icon(Icons.directions_outlined)
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

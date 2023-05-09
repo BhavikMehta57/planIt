@@ -229,6 +229,7 @@ class _ItineraryFormState extends State<ItineraryForm> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: app_Background,
+      resizeToAvoidBottomInset: false,
       body: Container(
         alignment: Alignment.center,
         height: deviceHeight * 0.8,

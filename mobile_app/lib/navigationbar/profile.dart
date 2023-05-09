@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:planit/screens/walkthrough.dart';
 
 class Profile extends StatefulWidget {
   static String tag = '/Profile';
@@ -84,8 +85,9 @@ class _ProfileState extends State<Profile> {
             text("Bhavik Mehta",),
             SizedBox(height: deviceHeight * 0.01,),
             text(FirebaseAuth.instance.currentUser!.email.toString()),
-            SizedBox(height: deviceHeight * 0.01,),
+            SizedBox(height: deviceHeight * 0.02,),
             Divider(height: 5, color: appShadowColor,),
+            SizedBox(height: deviceHeight * 0.02,),
             ListTile(
               horizontalTitleGap: 0.0,
               leading: const Icon(Icons.bookmark_added_rounded),
@@ -105,9 +107,9 @@ class _ProfileState extends State<Profile> {
             ListTile(
               horizontalTitleGap: 0.0,
               leading: const Icon(Icons.mark_chat_read_rounded),
-              title: text('FAQ', fontSize: 20.0),
+              title: text('Walkthrough', fontSize: 20.0),
               onTap: () {
-
+                Navigator.push(context, MaterialPageRoute(builder: (context) => WalkThrough()));
               },
             ),
             ListTile(
@@ -129,7 +131,7 @@ class _ProfileState extends State<Profile> {
             ListTile(
               horizontalTitleGap: 0.0,
               leading: const Icon(Icons.logout),
-              title: text('LogOut', fontSize: 20.0),
+              title: text('Logout', fontSize: 20.0),
               onTap: () async {
                 showDialog(
                     context: context,

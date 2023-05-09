@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'dart:async';
 import 'package:planit/main/appHome.dart';
@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:planit/navigationbar/userHome.dart';
+import 'package:planit/screens/walkthrough.dart';
 
 class SDSplashScreen extends StatefulWidget {
   static String tag = '/SplashScreen';
@@ -34,7 +35,7 @@ class _SDSplashScreenState extends State<SDSplashScreen>
   void navigate() async {
     if (FirebaseAuth.instance.currentUser != null) {
       if(FirebaseAuth.instance.currentUser!.email != null) {
-        print("Splash screen, employer found!");
+        print("Splash screen, User found!");
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => UserHome(currentIndex: 0,),
@@ -51,7 +52,7 @@ class _SDSplashScreenState extends State<SDSplashScreen>
     else {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => const MainHome(),
+            builder: (context) => const WalkThrough(),
           ),
               (Route<dynamic> route) => false);
     }

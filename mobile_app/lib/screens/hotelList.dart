@@ -31,6 +31,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:video_player/video_player.dart';
 
 class HotelList extends StatefulWidget {
   static String tag = '/HotelList';
@@ -52,17 +53,22 @@ class _HotelListState extends State<HotelList> {
   List filteredhotelsList = [];
   String? sort = "bestMatch";
   bool isPlanning = false;
-
+  late VideoPlayerController _controller;
+  late Future<void> _initializeVideoPlayerFuture;
 
   @override
   void initState() {
     super.initState();
     allHotelsList = List.from(widget.hotelList);
     filteredhotelsList = List.from(widget.hotelList);
+    _controller = VideoPlayerController.asset('assets/videos/logoLoader.mp4');
+    _initializeVideoPlayerFuture = _controller.initialize();
+    _controller.setLooping(true);
   }
 
   @override
   void dispose() {
+    _controller.dispose();
     super.dispose();
   }
 
@@ -141,9 +147,32 @@ class _HotelListState extends State<HotelList> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-                height: 50.0,
-                width: 50.0,
-                child: CircularProgressIndicator(color: appWhite,)),
+              height: deviceHeight * 0.4,
+              child: FutureBuilder(
+                future: _initializeVideoPlayerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // If the VideoPlayerController has finished initialization, use
+                    // the data it provides to limit the aspect ratio of the video.
+                    return AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      // Use the VideoPlayer widget to display the video.
+                      child: VideoPlayer(_controller),
+                    );
+                  } else {
+                    // If the VideoPlayerController is still initializing, show a
+                    // loading spinner.
+                    return SizedBox(
+                      height: 50.0,
+                      width: 50.0,
+                      child: const Center(
+                        child: CircularProgressIndicator(color: appWhite,),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
             SizedBox(height: 20.0,),
             text("Please wait while we generate an itinerary for you...", fontSize: 24.0, fontFamily: fontBold, maxLine: 3, isCentered: true),
           ],
@@ -164,6 +193,7 @@ class _HotelListState extends State<HotelList> {
           try {
             setState(() {
               isPlanning = true;
+              _controller.play();
             });
             final response = await http.post(
               Uri.parse('http://$ipAddress/itinerary/'),
@@ -196,6 +226,8 @@ class _HotelListState extends State<HotelList> {
                     (Route<dynamic> route) => false);
             setState(() {
               isPlanning = false;
+              _controller.pause();
+              _controller.dispose();
             });
           } catch(e) {
             const snackBar = SnackBar(
@@ -205,6 +237,7 @@ class _HotelListState extends State<HotelList> {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
             setState(() {
               isPlanning = false;
+              _controller.pause();
             });
           }
         },
