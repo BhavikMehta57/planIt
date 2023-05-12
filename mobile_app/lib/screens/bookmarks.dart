@@ -81,13 +81,13 @@ class _BookmarksState extends State<Bookmarks> {
         elevation: 0.0,
       ),
       body: isLoading ? Center(child: CircularProgressIndicator(color: appWhite,),) : SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height: deviceHeight * 0.03,),
-              StreamBuilder(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: deviceHeight * 0.03,),
+            Expanded(
+              child: StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection("itineraries")
                       .where("ItineraryID", whereIn: bookMarks)
@@ -235,9 +235,9 @@ class _BookmarksState extends State<Bookmarks> {
                     }
                   }
               ),
-              SizedBox(height: deviceHeight * 0.02,),
-            ],
-          ),
+            ),
+            SizedBox(height: deviceHeight * 0.02,),
+          ],
         ),
       ),
     );

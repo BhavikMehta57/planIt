@@ -395,7 +395,19 @@ class _ItineraryPageState extends State<ItineraryPage> {
           ),
           SizedBox(width: 10.0,),
         ] : [
-          isBookmarked ? Icon(Icons.bookmark_added, color: appWhite,) : GestureDetector(
+          isBookmarked ? GestureDetector(
+            onTap: () async {
+              setState(() {
+                isLoading = true;
+              });
+              await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.email).collection("bookmarks").doc(widget.itineraryID).delete();
+              setState(() {
+                isBookmarked = false;
+                isLoading = false;
+              });
+            },
+            child: Icon(Icons.bookmark_added, color: appWhite,),
+          ) : GestureDetector(
             onTap: () async {
               setState(() {
                 isLoading = true;

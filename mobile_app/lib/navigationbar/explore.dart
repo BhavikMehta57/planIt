@@ -317,11 +317,7 @@ class _ExploreState extends State<Explore> with SingleTickerProviderStateMixin {
                                               Padding(
                                                 padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
                                                 child: filterButton("Sort", () async {
-                                                  if (searchPlace == "") {
-                                                    await sortPlaces();
-                                                  } else {
-                                                    await sortFilteredPlaces();
-                                                  }
+                                                  await sortFilteredPlaces();
                                                   Navigator.pop(context);
                                                 }, appWhite, deviceHeight),
                                               )
