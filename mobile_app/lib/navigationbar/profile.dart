@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:planit/screens/bookmarks.dart';
 import 'package:planit/screens/walkthrough.dart';
 
 class Profile extends StatefulWidget {
@@ -93,7 +94,7 @@ class _ProfileState extends State<Profile> {
               leading: const Icon(Icons.bookmark_added_rounded),
               title: text('Bookmarks', fontSize: 20.0),
               onTap: () {
-
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Bookmarks()));
               },
             ),
             ListTile(

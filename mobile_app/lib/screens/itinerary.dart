@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:planit/main/appHome.dart';
 import 'package:planit/main/shared_prefs.dart';
 import 'package:planit/main/utils/AppString.dart';
@@ -49,6 +50,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
   int selectedIndex = 0;
   List itinerary = [];
   bool editState = false;
+  bool isBookmarked = false;
   int selectedPlace = 0;
   int selectedExtraPlace = 0;
   bool isLoading = false;
@@ -96,11 +98,13 @@ class _ItineraryPageState extends State<ItineraryPage> {
     setState(() {
       isLoading = true;
     });
+    await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.email).collection("bookmarks").doc(widget.itineraryID).get().then((value) {
+      if (value.exists) {
+        isBookmarked = true;
+      }
+    });
     await FirebaseFirestore.instance.collection("itineraries").doc(itineraryID).get().then((value) {
-      setState(() {
-        itinerary = value.data()!['Itinerary'];
-        print(itinerary);
-      });
+      itinerary = value.data()!['Itinerary'];
     });
     setState(() {
       isLoading = false;
@@ -391,6 +395,25 @@ class _ItineraryPageState extends State<ItineraryPage> {
           ),
           SizedBox(width: 10.0,),
         ] : [
+          isBookmarked ? Icon(Icons.bookmark_added, color: appWhite,) : GestureDetector(
+            onTap: () async {
+              setState(() {
+                isLoading = true;
+              });
+              await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.email).collection("bookmarks").doc(widget.itineraryID).set({
+                "ItineraryID": widget.itineraryID,
+                "numberOfDays": widget.numberOfDays,
+                "startDate": widget.startDate,
+                "destination" : widget.destination,
+              });
+              setState(() {
+                isBookmarked = true;
+                isLoading = false;
+              });
+            },
+            child: Icon(Icons.bookmark_add_outlined, color: appWhite,),
+          ),
+          SizedBox(width: 20.0,),
           GestureDetector(
             onTap: () async {
               setState(() {
@@ -582,16 +605,45 @@ class _ItineraryPageState extends State<ItineraryPage> {
                                               children: [
                                                 ListTile(
                                                   horizontalTitleGap: 0.0,
-                                                  leading: const Icon(Icons.bookmark_added_outlined, color: appColorPrimary,),
-                                                  title: text('Bookmark', fontSize: 20.0, textColor: appColorPrimary),
-                                                  onTap: () {},
-                                                ),
-                                                ListTile(
-                                                  horizontalTitleGap: 0.0,
                                                   leading: const Icon(Icons.reviews_outlined, color: appColorPrimary,),
-                                                  title: text('Review', fontSize: 20.0, textColor: appColorPrimary),
+                                                  title: text('Review', fontSize: 20.0, textColor: appColorPrimary, maxLine: 2),
                                                   onTap: () async {
-
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext reviewContext) {
+                                                          return AlertDialog(
+                                                            backgroundColor: appWhite,
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.all(Radius.circular(20.0))
+                                                            ),
+                                                            title: text('Review ${itinerary[selectedIndex]['places']['Place'][index]}', textColor: appBlack, fontFamily: fontSemibold, maxLine: 2),
+                                                            content: RatingBar.builder(
+                                                              initialRating: 3,
+                                                              minRating: 0.5,
+                                                              direction: Axis.horizontal,
+                                                              allowHalfRating: true,
+                                                              itemCount: 5,
+                                                              unratedColor: appDividerColor,
+                                                              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                              itemBuilder: (context, _) => Icon(
+                                                                Icons.star,
+                                                                color: Colors.yellow,
+                                                                size: 16,
+                                                              ),
+                                                              onRatingUpdate: (r) {
+                                                                print(r);
+                                                                // setState(() {
+                                                                //   rating = r;
+                                                                // });
+                                                              },
+                                                            ),
+                                                            actions: [
+                                                              shadowButton("Submit", () async {
+                                                                Navigator.pop(reviewContext);
+                                                              }, appColorPrimary, deviceHeight),
+                                                            ],
+                                                          );
+                                                        });
                                                   },
                                                 ),
                                               ],
