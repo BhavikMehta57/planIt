@@ -1,3 +1,4 @@
+import 'package:planit/firebase_options.dart';
 import 'package:planit/main/appHome.dart';
 import 'package:planit/main/shared_prefs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +28,10 @@ void main() async{
   //Setting SystemUIMode
   // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top]);
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      name: "planIt",
+      options: DefaultFirebaseOptions.currentPlatform
+  );
   runApp(
       MaterialApp(
         debugShowCheckedModeBanner: false,
